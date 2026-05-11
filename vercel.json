@@ -1,11 +1,6 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index.py" }
-  ],
-  "functions": {
-    "api/index.py": {
-      "includeFiles": "frontend/**"
-    }
-  }
+    { "source": "/:path*", "destination": "/api/index.py" }
+  ]
 }
