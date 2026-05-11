@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -947,9 +947,14 @@ async def verify_google_key(req: GoogleKeyRequest):
 
 
 # ── Serve frontend ────────────────────────────────────────────────────────────
-frontend_dir = Path(__file__).parent.parent / "frontend"
-if frontend_dir.exists():
-    app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
+_frontend = Path(__file__).parent.parent / "frontend"
+
+@app.get("/game")
+async def serve_game():
+    return FileResponse(str(_frontend / "game.html"))
+
+if _frontend.exists():
+    app.mount("/", StaticFiles(directory=str(_frontend), html=True), name="frontend")
 
 
 if __name__ == "__main__":
