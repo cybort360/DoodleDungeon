@@ -32,70 +32,21 @@ body{
 ══════════════════════════════════════════════════════════════════ */
 nav{
   position:sticky;top:0;z-index:200;
-  background:#1a1a1a;
-  border-bottom:2.5px solid var(--orange);
-  padding:11px 24px;
+  background:rgba(255,245,225,.92);backdrop-filter:blur(12px);
+  border-bottom:2px solid var(--dark);
+  padding:12px 20px;
   display:flex;justify-content:space-between;align-items:center;
-  gap:16px;
-
-  /* slide-in on load */
-  animation:nav-enter .55s cubic-bezier(.16,1,.3,1) both;
 }
-@keyframes nav-enter{
-  from{transform:translateY(-100%);opacity:0}
-  to{transform:translateY(0);opacity:1}
+.logo{display:flex;align-items:center;gap:8px;font-size:1.05rem;font-weight:700;text-decoration:none;color:var(--dark)}
+.nav-play{
+  background:var(--dark);color:var(--cream);
+  border:2px solid var(--dark);border-radius:50px;
+  padding:10px 22px;font-family:'Fredoka',sans-serif;font-size:.9rem;font-weight:700;
+  text-decoration:none;cursor:pointer;transition:transform .1s,background .15s;
+  display:flex;align-items:center;gap:7px;
 }
-
-/* Logo mark */
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
-.logo-mark{
-  width:34px;height:34px;border-radius:9px;
-  background:linear-gradient(135deg,var(--orange) 0%,var(--pink) 100%);
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Caveat',cursive;font-size:1.1rem;font-weight:700;
-  color:#fff;letter-spacing:-.5px;
-  box-shadow:0 0 12px rgba(255,176,124,.5);
-  flex-shrink:0;
-}
-.logo-name{
-  font-family:'Caveat',cursive;font-size:1.35rem;font-weight:700;
-  color:var(--cream);letter-spacing:.2px;
-  line-height:1;
-}
-
-/* nav CTA — glowing gradient pill */
-.nav-cta{
-  display:flex;align-items:center;gap:8px;
-  background:linear-gradient(135deg,var(--orange) 0%,var(--pink) 100%);
-  color:#1a1a1a;
-  border:none;border-radius:50px;
-  padding:9px 20px;
-  font-family:'Fredoka',sans-serif;font-size:.92rem;font-weight:700;
-  text-decoration:none;cursor:pointer;white-space:nowrap;
-  box-shadow:0 0 0 0 var(--orange-glow);
-  animation:nav-enter .55s cubic-bezier(.16,1,.3,1) both, cta-pulse 2.4s ease-in-out 1s infinite;
-  transition:transform .1s;
-  flex-shrink:0;
-}
-.nav-cta:hover{transform:scale(1.04)}
-.nav-cta:active{transform:scale(.97)}
-@keyframes cta-pulse{
-  0%,100%{box-shadow:0 0 8px 2px var(--orange-glow)}
-  50%{box-shadow:0 0 22px 7px var(--orange-glow),0 0 38px 12px var(--pink-glow)}
-}
-
-/* live dot */
-.live-dot{
-  width:8px;height:8px;border-radius:50%;
-  background:#ff4c4c;flex-shrink:0;
-  animation:blink 1.2s ease-in-out infinite;
-}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-
-@media(max-width:600px){
-  .logo-name{font-size:1.15rem}
-  .nav-cta{padding:8px 14px;font-size:.82rem}
-}
+.nav-play:hover{background:var(--orange);color:var(--dark);border-color:var(--dark)}
+.nav-play:active{transform:scale(.96)}
 
 /* ══════════════════════════════════════════════════════════════════
    HERO
@@ -290,71 +241,47 @@ nav{
 .divider{height:2px;background:linear-gradient(90deg,transparent,var(--dot),transparent);margin:0 20px}
 
 /* ══════════════════════════════════════════════════════════════════
-   HOW IT WORKS — quest log / wanted poster
+   HOW IT WORKS
 ══════════════════════════════════════════════════════════════════ */
-#how{
-  background:var(--dark);
-  color:var(--cream);
-  max-width:100%;
-  padding:72px 20px;
-  position:relative;
-  overflow:hidden;
-}
-#how::before{
-  content:'';position:absolute;inset:0;
-  background-image:radial-gradient(circle,rgba(255,176,124,.07) 1.5px,transparent 1.5px);
-  background-size:20px 20px;pointer-events:none;
-}
-.how-inner{max-width:540px;margin:0 auto;position:relative}
-#how .sec-eyebrow{color:var(--orange)}
-#how .sec-eyebrow::before{background:var(--orange)}
-#how .sec-title{color:var(--cream)}
-#how .sec-sub{color:#aaa}
+#how{padding:64px 20px;max-width:540px;margin:0 auto}
+.how-inner{position:relative}
 
-/* quest board top decoration */
-.quest-board-header{
-  display:flex;align-items:center;gap:10px;
-  background:var(--orange);color:var(--dark);
-  border-radius:10px 10px 0 0;
-  padding:9px 18px;font-size:.7rem;font-weight:700;letter-spacing:1.5px;
-  text-transform:uppercase;margin-bottom:0;margin-top:28px;
-  border:2px solid var(--orange);
-}
-.quest-board-body{
-  border:2px solid var(--orange);border-top:none;
-  border-radius:0 0 14px 14px;
-  padding:8px 0 4px;
-}
-
-.steps{display:flex;flex-direction:column;gap:0}
+.steps{display:flex;flex-direction:column;gap:14px;margin-top:28px}
 .step{
-  display:flex;align-items:flex-start;gap:18px;
-  padding:24px 18px;
-  border-bottom:1px dashed rgba(255,176,124,.3);
-  position:relative;
-  transition:background .2s;
+  display:flex;align-items:flex-start;gap:16px;
+  background:#fff;border:2.5px solid var(--dark);border-radius:20px;
+  padding:20px 18px;
+  border-left-width:5px;
+  transition:transform .12s,box-shadow .12s;
+  cursor:default;
 }
-.step:last-child{border-bottom:none}
-.step:hover{background:rgba(255,176,124,.05)}
+.step:nth-child(1){border-left-color:var(--orange)}
+.step:nth-child(2){border-left-color:var(--mint)}
+.step:nth-child(3){border-left-color:var(--pink)}
+.step:hover{transform:translateY(-3px);box-shadow:0 6px 0 var(--dark)}
 
-.step-num-wrap{flex-shrink:0;text-align:center;min-width:52px}
+.step-num-wrap{flex-shrink:0;text-align:center;width:48px}
 .step-num{
-  font-family:'Caveat',cursive;font-size:4.5rem;font-weight:700;
+  font-family:'Caveat',cursive;font-size:3.5rem;font-weight:700;
   color:var(--orange);line-height:1;display:block;
-  text-shadow:0 0 28px rgba(255,176,124,.5);
 }
+.step:nth-child(2) .step-num{color:var(--mint)}
+.step:nth-child(3) .step-num{color:var(--pink)}
 .step-icon-ring{
-  width:40px;height:40px;background:rgba(255,176,124,.1);border:2px solid rgba(255,176,124,.4);
+  width:36px;height:36px;background:var(--cream);border:2px solid var(--dark);
   border-radius:50%;display:flex;align-items:center;justify-content:center;
-  margin:2px auto 0;
+  margin:4px auto 0;
 }
-.step h3{font-size:1.15rem;font-weight:700;margin-bottom:5px;color:var(--cream)}
-.step p{font-size:.83rem;color:#aaa;line-height:1.65}
+.step h3{font-size:1.05rem;font-weight:700;margin-bottom:4px;color:var(--dark)}
+.step p{font-size:.82rem;color:#666;line-height:1.6}
 .step-tag{
-  display:inline-block;margin-top:10px;
-  border:1.5px solid rgba(255,176,124,.5);border-radius:50px;
-  padding:3px 12px;font-size:.66rem;font-weight:700;color:var(--orange);
+  display:inline-block;margin-top:8px;
+  border:2px solid var(--dark);border-radius:50px;
+  padding:3px 12px;font-size:.66rem;font-weight:700;color:var(--dark);
 }
+.step:nth-child(1) .step-tag{background:var(--peach)}
+.step:nth-child(2) .step-tag{background:var(--mint)}
+.step:nth-child(3) .step-tag{background:var(--pink)}
 
 /* ══════════════════════════════════════════════════════════════════
    CLASSES — character select
@@ -544,13 +471,11 @@ footer strong{color:#888}
 <!-- ══════════════════════ NAV ══════════════════════ -->
 <nav>
   <a href="/" class="logo">
-    <div class="logo-mark">DD</div>
-    <span class="logo-name">DoodleDungeon</span>
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#FF9AA2" stroke="#FF9AA2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    DoodleDungeon
   </a>
-
-  <a href="/game" class="nav-cta">
-    <div class="live-dot"></div>
-    Enter Dungeon
+  <a href="/game" class="nav-play">
+    Play Now
     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
   </a>
 </nav>
@@ -693,52 +618,46 @@ footer strong{color:#888}
     <h2 class="sec-title">Three steps<br>to glory.</h2>
     <p class="sec-sub">No gym membership. No app store. Just paper, your phone, and the will to not be embarrassed by a goblin.</p>
 
-    <div class="quest-board-header">
-      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-      Active Quest Board
-    </div>
-    <div class="quest-board-body">
-      <div class="steps">
-        <div class="step">
-          <div class="step-num-wrap">
-            <span class="step-num">01</span>
-            <div class="step-icon-ring">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
-            </div>
-          </div>
-          <div>
-            <h3>Doodle your dungeon</h3>
-            <p>Grab any paper. Draw rooms, label enemies with skulls, mark the boss with a crown, connect corridors however you want. It doesn't have to be pretty. That's kind of the point.</p>
-            <span class="step-tag">Pen + paper only</span>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num-wrap">
+          <span class="step-num">01</span>
+          <div class="step-icon-ring">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
           </div>
         </div>
+        <div>
+          <h3>Doodle your dungeon</h3>
+          <p>Grab any paper. Draw rooms, label enemies with skulls, mark the boss with a crown, connect corridors however you want. It doesn't have to be pretty. That's kind of the point.</p>
+          <span class="step-tag">Pen + paper only</span>
+        </div>
+      </div>
 
-        <div class="step">
-          <div class="step-num-wrap">
-            <span class="step-num">02</span>
-            <div class="step-icon-ring">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            </div>
-          </div>
-          <div>
-            <h3>Summon the world</h3>
-            <p>Snap a photo. Gemma 4's vision model reads your sketch and generates a full dungeon &mdash; named rooms, lore, enemies with backstories, and a boss with a deep personal grudge.</p>
-            <span class="step-tag">128K context &middot; Remembers everything</span>
+      <div class="step">
+        <div class="step-num-wrap">
+          <span class="step-num">02</span>
+          <div class="step-icon-ring">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           </div>
         </div>
+        <div>
+          <h3>Summon the world</h3>
+          <p>Snap a photo. Gemma 4's vision model reads your sketch and generates a full dungeon — named rooms, lore, enemies with backstories, and a boss with a deep personal grudge.</p>
+          <span class="step-tag">128K context · Remembers everything</span>
+        </div>
+      </div>
 
-        <div class="step">
-          <div class="step-num-wrap">
-            <span class="step-num">03</span>
-            <div class="step-icon-ring">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            </div>
+      <div class="step">
+        <div class="step-num-wrap">
+          <span class="step-num">03</span>
+          <div class="step-icon-ring">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           </div>
-          <div>
-            <h3>Sweat through it</h3>
-            <p>Each monster demands reps. Point your camera, do your squats. AI watches your form &mdash; sloppy reps deal less damage, and enemies hit back. Perfect form? Critical hit.</p>
-            <span class="step-tag">Real reps &middot; Real damage</span>
-          </div>
+        </div>
+        <div>
+          <h3>Sweat through it</h3>
+          <p>Each monster demands reps. Point your camera, do your squats. AI watches your form — sloppy reps deal less damage, and enemies hit back. Perfect form? Critical hit.</p>
+          <span class="step-tag">Real reps · Real damage</span>
         </div>
       </div>
     </div>
