@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="32" fill="#FFB07C"/>
+  <!-- Sword vertical -->
+  <rect x="88" y="16" width="16" height="108" rx="6" fill="#1a1a1a"/>
+  <!-- Sword crossguard -->
+  <rect x="56" y="80" width="80" height="16" rx="6" fill="#1a1a1a"/>
+  <!-- Sword pommel -->
+  <circle cx="96" cy="148" r="14" fill="#1a1a1a"/>
+  <!-- Highlight gem -->
+  <circle cx="96" cy="48" r="8" fill="#FFF5E1"/>
+</svg>
