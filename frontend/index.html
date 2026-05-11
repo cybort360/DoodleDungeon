@@ -9,11 +9,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="/manifest.json">
 <style>
-/* ── Reset & base ─────────────────────────────────────────────────────────── */
+/* ── Reset & base ────────────────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --cream:#FFF5E1;--dot:#d4c4a0;--orange:#FFB07C;--pink:#FF9AA2;--mint:#A8E6CF;
   --peach:#FFD8B1;--dark:#1a1a1a;--border:2.5px solid #1a1a1a;
+  --orange-glow:rgba(255,176,124,.55);--pink-glow:rgba(255,154,162,.4);
 }
 html{scroll-behavior:smooth}
 body{
@@ -26,42 +27,179 @@ body{
 }
 .caveat{font-family:'Caveat',cursive}
 
-/* ── Nav ─────────────────────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════
+   NAV
+══════════════════════════════════════════════════════════════════ */
 nav{
   position:sticky;top:0;z-index:200;
-  background:rgba(255,245,225,.92);backdrop-filter:blur(12px);
-  border-bottom:2px solid var(--dark);
-  padding:12px 20px;
+  background:#1a1a1a;
+  border-bottom:2.5px solid var(--orange);
+  padding:11px 24px;
   display:flex;justify-content:space-between;align-items:center;
-}
-.logo{display:flex;align-items:center;gap:8px;font-size:1.05rem;font-weight:700;text-decoration:none;color:var(--dark)}
-.nav-play{
-  background:var(--dark);color:var(--cream);
-  border:2px solid var(--dark);border-radius:50px;
-  padding:10px 22px;font-family:'Fredoka',sans-serif;font-size:.9rem;font-weight:700;
-  text-decoration:none;cursor:pointer;transition:transform .1s,background .15s;
-  display:flex;align-items:center;gap:7px;
-}
-.nav-play:hover{background:var(--orange);color:var(--dark);border-color:var(--dark)}
-.nav-play:active{transform:scale(.96)}
+  gap:16px;
 
-/* ── Hero ────────────────────────────────────────────────────────────────── */
-.hero{
-  text-align:center;padding:44px 20px 52px;max-width:520px;margin:0 auto;
+  /* slide-in on load */
+  animation:nav-enter .55s cubic-bezier(.16,1,.3,1) both;
 }
+@keyframes nav-enter{
+  from{transform:translateY(-100%);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+/* Logo mark */
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.logo-mark{
+  width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,var(--orange) 0%,var(--pink) 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Caveat',cursive;font-size:1.1rem;font-weight:700;
+  color:#fff;letter-spacing:-.5px;
+  box-shadow:0 0 12px rgba(255,176,124,.5);
+  flex-shrink:0;
+}
+.logo-name{
+  font-family:'Caveat',cursive;font-size:1.35rem;font-weight:700;
+  color:var(--cream);letter-spacing:.2px;
+  line-height:1;
+}
+
+/* nav CTA — glowing gradient pill */
+.nav-cta{
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--orange) 0%,var(--pink) 100%);
+  color:#1a1a1a;
+  border:none;border-radius:50px;
+  padding:9px 20px;
+  font-family:'Fredoka',sans-serif;font-size:.92rem;font-weight:700;
+  text-decoration:none;cursor:pointer;white-space:nowrap;
+  box-shadow:0 0 0 0 var(--orange-glow);
+  animation:nav-enter .55s cubic-bezier(.16,1,.3,1) both, cta-pulse 2.4s ease-in-out 1s infinite;
+  transition:transform .1s;
+  flex-shrink:0;
+}
+.nav-cta:hover{transform:scale(1.04)}
+.nav-cta:active{transform:scale(.97)}
+@keyframes cta-pulse{
+  0%,100%{box-shadow:0 0 8px 2px var(--orange-glow)}
+  50%{box-shadow:0 0 22px 7px var(--orange-glow),0 0 38px 12px var(--pink-glow)}
+}
+
+/* live dot */
+.live-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#ff4c4c;flex-shrink:0;
+  animation:blink 1.2s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+@media(max-width:600px){
+  .logo-name{font-size:1.15rem}
+  .nav-cta{padding:8px 14px;font-size:.82rem}
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   HERO
+══════════════════════════════════════════════════════════════════ */
+.hero{
+  min-height:100svh;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:48px 20px 52px;
+  position:relative;
+  overflow:hidden;
+}
+
+/* ── CSS particle field ─────────────────────────────────────────────────── */
+.particles{
+  position:absolute;inset:0;pointer-events:none;z-index:0;
+  overflow:hidden;
+}
+.p{
+  position:absolute;bottom:-8px;
+  border-radius:50%;
+  opacity:0;
+  animation:drift linear infinite;
+}
+/* 20 particles with varied sizes, positions, durations */
+.p:nth-child(1) {left:5%;width:3px;height:3px;background:var(--orange);animation-duration:8s;animation-delay:0s}
+.p:nth-child(2) {left:12%;width:2px;height:2px;background:var(--pink);animation-duration:11s;animation-delay:1.2s}
+.p:nth-child(3) {left:20%;width:4px;height:4px;background:var(--peach);animation-duration:9s;animation-delay:2.5s}
+.p:nth-child(4) {left:28%;width:2px;height:2px;background:var(--orange);animation-duration:13s;animation-delay:0.7s}
+.p:nth-child(5) {left:35%;width:3px;height:3px;background:var(--mint);animation-duration:10s;animation-delay:3.1s}
+.p:nth-child(6) {left:42%;width:5px;height:5px;background:var(--pink);animation-duration:7s;animation-delay:1.8s}
+.p:nth-child(7) {left:50%;width:2px;height:2px;background:var(--orange);animation-duration:12s;animation-delay:4.2s}
+.p:nth-child(8) {left:58%;width:3px;height:3px;background:var(--peach);animation-duration:9.5s;animation-delay:0.3s}
+.p:nth-child(9) {left:65%;width:4px;height:4px;background:var(--mint);animation-duration:11s;animation-delay:2.9s}
+.p:nth-child(10){left:72%;width:2px;height:2px;background:var(--orange);animation-duration:8.5s;animation-delay:1.5s}
+.p:nth-child(11){left:78%;width:3px;height:3px;background:var(--pink);animation-duration:14s;animation-delay:3.6s}
+.p:nth-child(12){left:84%;width:2px;height:2px;background:var(--peach);animation-duration:10s;animation-delay:0.9s}
+.p:nth-child(13){left:90%;width:4px;height:4px;background:var(--orange);animation-duration:7.5s;animation-delay:2.1s}
+.p:nth-child(14){left:95%;width:3px;height:3px;background:var(--mint);animation-duration:13s;animation-delay:4.8s}
+.p:nth-child(15){left:8%;width:2px;height:2px;background:var(--pink);animation-duration:16s;animation-delay:5.2s}
+.p:nth-child(16){left:33%;width:3px;height:3px;background:var(--orange);animation-duration:9s;animation-delay:6.1s}
+.p:nth-child(17){left:55%;width:2px;height:2px;background:var(--peach);animation-duration:12s;animation-delay:3.3s}
+.p:nth-child(18){left:70%;width:4px;height:4px;background:var(--pink);animation-duration:8s;animation-delay:7s}
+.p:nth-child(19){left:88%;width:2px;height:2px;background:var(--orange);animation-duration:11s;animation-delay:1.1s}
+.p:nth-child(20){left:16%;width:3px;height:3px;background:var(--mint);animation-duration:15s;animation-delay:4s}
+
+@keyframes drift{
+  0%{transform:translateY(0) translateX(0) scale(1);opacity:0}
+  10%{opacity:.7}
+  80%{opacity:.5}
+  100%{transform:translateY(-100vh) translateX(20px) scale(0);opacity:0}
+}
+
+.hero > *{position:relative;z-index:1}
+
+/* badge */
 .hero-badge{
-  display:inline-flex;align-items:center;gap:6px;
+  display:inline-flex;align-items:center;gap:7px;
   background:var(--pink);border:2px solid var(--dark);border-radius:50px;
-  padding:5px 14px;font-size:.7rem;font-weight:700;letter-spacing:.8px;
-  margin-bottom:24px;text-transform:uppercase;
+  padding:5px 16px;font-size:.68rem;font-weight:700;letter-spacing:.9px;
+  margin-bottom:28px;text-transform:uppercase;
+  box-shadow:2px 2px 0 var(--dark);
+}
+
+/* ── Hero headline ──────────────────────────────────────────────────────── */
+.hero-headline{margin-bottom:0;line-height:1}
+.hero-line-1{
+  display:block;
+  font-family:'Caveat',cursive;
+  font-size:clamp(3.4rem,11vw,6.2rem);
+  font-weight:700;
+  color:var(--orange);
+  line-height:.95;
+  /* subtle text-shadow depth */
+  text-shadow:3px 3px 0 rgba(255,154,162,.45);
+}
+.hero-line-2{
+  display:block;
+  font-family:'Fredoka',sans-serif;
+  font-size:clamp(2.8rem,9vw,5.2rem);
+  font-weight:700;
+  color:var(--dark);
+  line-height:1;
+  margin-top:.1em;
+}
+.hero-line-3{
+  display:block;
+  font-family:'Caveat',cursive;
+  font-size:clamp(1rem,3.5vw,1.5rem);
+  font-weight:600;
+  color:#999;
+  font-style:italic;
+  margin-top:.4em;
+  line-height:1.2;
 }
 
 /* ── Paper illustration ──────────────────────────────────────────────────── */
 .paper-wrap{
   position:relative;
-  width:min(420px, calc(100vw - 64px));
-  margin:0 auto 52px;
-  filter:drop-shadow(4px 6px 0px rgba(0,0,0,.15));
+  width:min(480px, calc(100vw - 48px));
+  margin:40px auto 44px;
+  filter:drop-shadow(6px 8px 0px rgba(0,0,0,.18));
 }
 #hero-svg{width:100%;height:auto;display:block}
 
@@ -69,7 +207,7 @@ nav{
 .scan-beam{
   position:absolute;left:3%;right:3%;height:3px;
   background:linear-gradient(90deg,transparent 0%,var(--orange) 30%,#fff 50%,var(--orange) 70%,transparent 100%);
-  box-shadow:0 0 18px 6px rgba(255,176,124,.5);
+  box-shadow:0 0 20px 7px rgba(255,176,124,.55);
   border-radius:2px;top:5%;
   animation:beam-sweep 3.2s ease-in-out infinite;
   pointer-events:none;
@@ -88,168 +226,316 @@ nav{
   white-space:nowrap;display:flex;align-items:center;gap:5px;
   box-shadow:2px 2px 0 var(--dark);
 }
-.chip-1{top:-8px;left:-20px;background:var(--orange);animation:float 3s ease-in-out infinite}
-.chip-2{top:10px;right:-30px;background:var(--mint);animation:float 3.5s ease-in-out infinite;animation-delay:.7s}
-.chip-3{bottom:0px;left:-24px;background:var(--pink);animation:float 2.8s ease-in-out infinite;animation-delay:1.3s}
-.chip-4{bottom:12px;right:-22px;background:var(--peach);animation:float 3.2s ease-in-out infinite;animation-delay:.4s}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.chip-1{top:-10px;left:-24px;background:var(--orange);animation:float 3s ease-in-out infinite}
+.chip-2{top:8px;right:-34px;background:var(--mint);animation:float 3.5s ease-in-out infinite;animation-delay:.7s}
+.chip-3{bottom:-2px;left:-28px;background:var(--pink);animation:float 2.8s ease-in-out infinite;animation-delay:1.3s}
+.chip-4{bottom:10px;right:-26px;background:var(--peach);animation:float 3.2s ease-in-out infinite;animation-delay:.4s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @media(max-width:420px){
   .chip{font-size:.6rem;padding:4px 9px;gap:4px}
-  .chip-1{left:-6px}.chip-2{right:-6px}.chip-3{left:-6px}.chip-4{right:-6px}
+  .chip-1{left:-4px}.chip-2{right:-4px}.chip-3{left:-4px}.chip-4{right:-4px}
 }
 
-/* ── Hero text ───────────────────────────────────────────────────────────── */
-.hero h1{font-size:2.8rem;font-weight:700;line-height:1.05;margin-bottom:14px}
-.hero h1 .line-1{display:block;font-family:'Caveat',cursive;font-size:3.4rem;color:var(--orange);line-height:1}
-.hero h1 .line-3{display:block;font-size:1rem;color:#888;font-weight:600;margin-top:4px;font-family:'Caveat',cursive}
-.hero-sub{font-size:.95rem;color:#666;line-height:1.7;margin-bottom:28px;max-width:360px;margin-left:auto;margin-right:auto}
-.hero-sub strong{color:var(--dark)}
+/* ── Hero CTA row ───────────────────────────────────────────────────────── */
+.hero-cta-row{
+  display:flex;align-items:center;justify-content:center;
+  flex-wrap:wrap;gap:16px;
+  margin-top:6px;
+}
 
 .btn-hero{
   display:inline-flex;align-items:center;gap:10px;
   background:var(--dark);color:var(--cream);
   border:2.5px solid var(--dark);border-radius:50px;
-  padding:16px 32px;font-family:'Fredoka',sans-serif;font-size:1.15rem;font-weight:700;
+  padding:18px 36px;font-family:'Fredoka',sans-serif;font-size:1.15rem;font-weight:700;
   text-decoration:none;cursor:pointer;
-  box-shadow:4px 4px 0 var(--orange);
+  box-shadow:4px 4px 0 var(--orange),0 0 28px rgba(255,176,124,.2);
   transition:transform .1s,box-shadow .1s;
 }
-.btn-hero:hover{box-shadow:2px 2px 0 var(--orange);transform:translate(2px,2px)}
+.btn-hero:hover{
+  box-shadow:2px 2px 0 var(--orange),0 0 14px rgba(255,176,124,.15);
+  transform:translate(2px,2px);
+}
 .btn-hero:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--orange)}
+
 .btn-ghost{
   display:inline-flex;align-items:center;gap:6px;
   color:#888;border-bottom:2px dashed #ccc;padding-bottom:2px;
-  font-size:.88rem;font-weight:600;text-decoration:none;
-  margin-left:18px;transition:color .15s;
+  font-size:.9rem;font-weight:600;text-decoration:none;
+  transition:color .15s,border-color .15s;
 }
 .btn-ghost:hover{color:var(--dark);border-color:var(--dark)}
 
+/* pills */
 .hero-pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:22px}
 .hero-pill{
   display:inline-flex;align-items:center;gap:5px;
-  background:var(--cream);border:2px solid var(--dark);border-radius:50px;
+  background:rgba(255,245,225,.8);border:2px solid var(--dark);border-radius:50px;
   padding:4px 12px;font-size:.7rem;font-weight:700;
+  backdrop-filter:blur(4px);
 }
 
-/* ── Section shell ───────────────────────────────────────────────────────── */
-.section{padding:56px 20px;max-width:480px;margin:0 auto}
+/* ══════════════════════════════════════════════════════════════════
+   SECTION SHELL
+══════════════════════════════════════════════════════════════════ */
+.section{padding:64px 20px;max-width:540px;margin:0 auto}
 .sec-eyebrow{
-  font-size:.65rem;font-weight:700;color:#aaa;letter-spacing:2px;
-  text-transform:uppercase;margin-bottom:6px;
+  font-size:.62rem;font-weight:700;color:#aaa;letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:8px;
   display:flex;align-items:center;gap:8px;
 }
-.sec-eyebrow::before{content:'';flex:none;width:20px;height:2px;background:var(--orange);border-radius:1px}
-.sec-title{font-size:2rem;font-weight:700;line-height:1.15;margin-bottom:8px}
-.sec-sub{font-size:.9rem;color:#666;line-height:1.6}
+.sec-eyebrow::before{content:'';flex:none;width:24px;height:2px;background:var(--orange);border-radius:1px}
+.sec-title{font-size:2.2rem;font-weight:700;line-height:1.12;margin-bottom:10px}
+.sec-sub{font-size:.9rem;color:#666;line-height:1.65}
 .divider{height:2px;background:linear-gradient(90deg,transparent,var(--dot),transparent);margin:0 20px}
 
-/* ── Steps ───────────────────────────────────────────────────────────────── */
-.steps{margin-top:28px;display:flex;flex-direction:column;gap:0}
+/* ══════════════════════════════════════════════════════════════════
+   HOW IT WORKS — quest log / wanted poster
+══════════════════════════════════════════════════════════════════ */
+#how{
+  background:var(--dark);
+  color:var(--cream);
+  max-width:100%;
+  padding:72px 20px;
+  position:relative;
+  overflow:hidden;
+}
+#how::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(255,176,124,.07) 1.5px,transparent 1.5px);
+  background-size:20px 20px;pointer-events:none;
+}
+.how-inner{max-width:540px;margin:0 auto;position:relative}
+#how .sec-eyebrow{color:var(--orange)}
+#how .sec-eyebrow::before{background:var(--orange)}
+#how .sec-title{color:var(--cream)}
+#how .sec-sub{color:#aaa}
+
+/* quest board top decoration */
+.quest-board-header{
+  display:flex;align-items:center;gap:10px;
+  background:var(--orange);color:var(--dark);
+  border-radius:10px 10px 0 0;
+  padding:9px 18px;font-size:.7rem;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;margin-bottom:0;margin-top:28px;
+  border:2px solid var(--orange);
+}
+.quest-board-body{
+  border:2px solid var(--orange);border-top:none;
+  border-radius:0 0 14px 14px;
+  padding:8px 0 4px;
+}
+
+.steps{display:flex;flex-direction:column;gap:0}
 .step{
-  display:flex;align-items:flex-start;gap:16px;
-  padding:20px 0;border-bottom:2px dashed #e8ddd0;
+  display:flex;align-items:flex-start;gap:18px;
+  padding:24px 18px;
+  border-bottom:1px dashed rgba(255,176,124,.3);
+  position:relative;
+  transition:background .2s;
 }
 .step:last-child{border-bottom:none}
-.step-num-wrap{flex-shrink:0;text-align:center}
+.step:hover{background:rgba(255,176,124,.05)}
+
+.step-num-wrap{flex-shrink:0;text-align:center;min-width:52px}
 .step-num{
-  font-family:'Caveat',cursive;font-size:3.5rem;font-weight:700;
+  font-family:'Caveat',cursive;font-size:4.5rem;font-weight:700;
   color:var(--orange);line-height:1;display:block;
+  text-shadow:0 0 28px rgba(255,176,124,.5);
 }
 .step-icon-ring{
-  width:44px;height:44px;background:var(--cream);border:2px solid var(--dark);
+  width:40px;height:40px;background:rgba(255,176,124,.1);border:2px solid rgba(255,176,124,.4);
   border-radius:50%;display:flex;align-items:center;justify-content:center;
-  margin:4px auto 0;
+  margin:2px auto 0;
 }
-.step h3{font-size:1.1rem;font-weight:700;margin-bottom:4px}
-.step p{font-size:.82rem;color:#666;line-height:1.6}
+.step h3{font-size:1.15rem;font-weight:700;margin-bottom:5px;color:var(--cream)}
+.step p{font-size:.83rem;color:#aaa;line-height:1.65}
 .step-tag{
-  display:inline-block;margin-top:8px;
-  border:2px solid var(--dark);border-radius:50px;
-  padding:3px 12px;font-size:.68rem;font-weight:700;
+  display:inline-block;margin-top:10px;
+  border:1.5px solid rgba(255,176,124,.5);border-radius:50px;
+  padding:3px 12px;font-size:.66rem;font-weight:700;color:var(--orange);
 }
 
-/* ── Classes ─────────────────────────────────────────────────────────────── */
-.classes{margin-top:24px;display:flex;flex-direction:column;gap:12px}
+/* ══════════════════════════════════════════════════════════════════
+   CLASSES — character select
+══════════════════════════════════════════════════════════════════ */
+.classes-section{padding:72px 20px;max-width:540px;margin:0 auto}
+
+.char-select-label{
+  display:inline-block;
+  background:var(--dark);color:var(--orange);
+  font-family:'Caveat',cursive;font-size:.85rem;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;
+  border:2px solid var(--dark);border-radius:6px;
+  padding:3px 12px;margin-bottom:24px;
+}
+
+.classes{display:flex;flex-direction:column;gap:14px}
+
+/* character card */
 .cls{
   background:#fff;border:var(--border);border-radius:20px;
-  padding:16px;display:flex;align-items:center;gap:14px;
-  transition:transform .12s,box-shadow .12s;cursor:default;
+  padding:18px;display:flex;align-items:flex-start;gap:16px;
+  cursor:default;position:relative;overflow:hidden;
+  transition:transform .15s,box-shadow .15s;
+  box-shadow:3px 3px 0 var(--dark);
 }
-.cls:hover{transform:translateY(-3px);box-shadow:0 6px 0 var(--dark)}
-.cls-thumb{
-  width:56px;height:56px;border-radius:14px;border:2px solid var(--dark);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+.cls:hover{
+  transform:translateY(-4px) translateX(-2px);
+  box-shadow:5px 7px 0 var(--dark);
 }
-.cls-name{font-size:1.05rem;font-weight:700;margin-bottom:2px}
-.cls-desc{font-size:.72rem;color:#888;margin-bottom:8px}
-.cls-exercises{display:flex;gap:6px;flex-wrap:wrap}
-.ex-pill{
-  background:var(--cream);border:1.5px solid var(--dark);border-radius:50px;
-  padding:2px 10px;font-size:.65rem;font-weight:600;
+/* corner label (RPG sheet style) */
+.cls::before{
+  content:attr(data-class);
+  position:absolute;top:14px;right:14px;
+  font-family:'Caveat',cursive;font-size:.7rem;font-weight:700;
+  color:#ccc;text-transform:uppercase;letter-spacing:1.5px;
 }
 
-/* ── Why cards ───────────────────────────────────────────────────────────── */
+.cls-thumb{
+  width:60px;height:60px;border-radius:14px;border:2px solid var(--dark);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+
+.cls-name{font-size:1.15rem;font-weight:700;margin-bottom:1px}
+.cls-sub{font-size:.7rem;color:#888;margin-bottom:6px;font-style:italic}
+.cls-exercises{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.ex-pill{
+  background:var(--cream);border:1.5px solid var(--dark);border-radius:50px;
+  padding:3px 10px;font-size:.65rem;font-weight:600;
+}
+
+/* stat bars */
+.cls-stats{display:flex;flex-direction:column;gap:4px}
+.stat-row{display:flex;align-items:center;gap:8px;font-size:.65rem;font-weight:700;color:#888}
+.stat-label{width:28px;flex-shrink:0}
+.stat-track{
+  flex:1;height:6px;background:#eee;border-radius:3px;overflow:hidden;
+  border:1px solid #ddd;
+}
+.stat-fill{
+  height:100%;border-radius:3px;
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .5s cubic-bezier(.34,1.56,.64,1);
+}
+/* animate bars when card is hovered */
+.cls:hover .stat-fill{transform:scaleX(1)}
+/* also show on page load after a delay */
+.cls.bars-in .stat-fill{transform:scaleX(1)}
+
+/* ══════════════════════════════════════════════════════════════════
+   WHY SECTION
+══════════════════════════════════════════════════════════════════ */
 .why-grid{margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .why-card{
-  background:#fff;border:var(--border);border-radius:18px;padding:16px;
-  transition:transform .12s;
+  background:#fff;border:var(--border);border-radius:18px;padding:18px;
+  box-shadow:2px 2px 0 var(--dark);
+  transition:transform .12s,box-shadow .12s;
 }
-.why-card:hover{transform:translateY(-2px)}
+.why-card:hover{transform:translateY(-3px) translateX(-1px);box-shadow:3px 5px 0 var(--dark)}
 .why-icon{
   width:40px;height:40px;border-radius:10px;border:2px solid var(--dark);
   display:flex;align-items:center;justify-content:center;margin-bottom:10px;
 }
 .why-card h3{font-size:.9rem;font-weight:700;margin-bottom:4px;line-height:1.3}
-.why-card p{font-size:.75rem;color:#777;line-height:1.55}
+.why-card p{font-size:.75rem;color:#777;line-height:1.6}
 
-/* ── Final CTA ───────────────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════
+   FINAL CTA
+══════════════════════════════════════════════════════════════════ */
+.final-cta-wrap{
+  padding:0 20px 80px;
+}
 .final-cta{
-  margin:0 20px 64px;padding:44px 24px;
+  padding:56px 28px;
   background:var(--dark);color:var(--cream);
-  border-radius:24px;border:var(--border);
+  border-radius:28px;border:var(--border);
   text-align:center;position:relative;overflow:hidden;
-  max-width:440px;margin-left:auto;margin-right:auto;
-  box-shadow:6px 6px 0 var(--orange);
+  max-width:520px;margin:0 auto;
+  box-shadow:8px 8px 0 var(--orange);
 }
 .final-cta::before{
   content:'';position:absolute;inset:0;
-  background-image:radial-gradient(circle,rgba(255,176,124,.12) 1.5px,transparent 1.5px);
-  background-size:20px 20px;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(255,176,124,.1) 1.5px,transparent 1.5px);
+  background-size:22px 22px;pointer-events:none;
 }
-.final-eyebrow{
-  font-family:'Caveat',cursive;font-size:1.3rem;color:var(--orange);
-  display:block;margin-bottom:6px;
+/* decorative corner marks */
+.final-cta::after{
+  content:'';position:absolute;
+  top:18px;left:18px;right:18px;bottom:18px;
+  border:1px dashed rgba(255,176,124,.2);
+  border-radius:18px;pointer-events:none;
 }
-.final-cta h2{font-size:2.4rem;font-weight:700;line-height:1.1;margin-bottom:12px}
-.final-cta p{font-size:.88rem;color:#aaa;line-height:1.65;margin-bottom:28px;max-width:300px;margin-left:auto;margin-right:auto}
+
+.final-quote{
+  font-family:'Caveat',cursive;
+  font-size:clamp(2rem,7vw,3.2rem);
+  font-weight:700;
+  color:var(--cream);
+  line-height:1.1;
+  margin-bottom:10px;
+  position:relative;
+}
+.final-quote em{
+  color:var(--orange);
+  font-style:normal;
+  display:block;
+}
+.final-tagline{
+  font-size:.88rem;color:#aaa;line-height:1.7;
+  margin-bottom:32px;max-width:320px;margin-left:auto;margin-right:auto;
+  position:relative;
+}
+
 .btn-final{
   display:inline-flex;align-items:center;gap:10px;
-  background:var(--orange);color:var(--dark);
-  border:2.5px solid var(--orange);border-radius:50px;
-  padding:16px 32px;font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;
-  text-decoration:none;cursor:pointer;
-  box-shadow:4px 4px 0 rgba(255,245,225,.3);
+  background:linear-gradient(135deg,var(--orange) 0%,var(--pink) 100%);
+  color:var(--dark);
+  border:none;border-radius:50px;
+  padding:18px 38px;font-family:'Fredoka',sans-serif;font-size:1.15rem;font-weight:700;
+  text-decoration:none;cursor:pointer;position:relative;
+  box-shadow:0 0 32px rgba(255,176,124,.4),4px 4px 0 rgba(255,245,225,.25);
   transition:transform .1s,box-shadow .1s;
 }
-.btn-final:hover{box-shadow:2px 2px 0 rgba(255,245,225,.3);transform:translate(2px,2px)}
-.btn-final:active{transform:translate(4px,4px);box-shadow:none}
+.btn-final:hover{
+  transform:scale(1.04);
+  box-shadow:0 0 48px rgba(255,176,124,.6),4px 4px 0 rgba(255,245,225,.25);
+}
+.btn-final:active{transform:scale(.97)}
 
 /* ── Footer ──────────────────────────────────────────────────────────────── */
 footer{
-  text-align:center;padding:20px 20px 44px;
-  font-size:.75rem;color:#bbb;line-height:1.8;
+  text-align:center;padding:24px 20px 48px;
+  font-size:.75rem;color:#bbb;line-height:1.9;
+  border-top:1px dashed #e0d4c0;
 }
 footer strong{color:#888}
 
-/* ── Scroll reveal ───────────────────────────────────────────────────────── */
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .5s ease,transform .5s ease}
+/* ══════════════════════════════════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════════════════════════════════ */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .55s ease,transform .55s ease}
 .reveal.visible{opacity:1;transform:none}
 
-/* ── Responsive ──────────────────────────────────────────────────────────── */
-@media(max-width:380px){
-  .hero h1{font-size:2.3rem}
-  .hero h1 .line-1{font-size:2.8rem}
+/* stagger children */
+.reveal-stagger > *{
+  opacity:0;transform:translateY(20px);
+  transition:opacity .4s ease,transform .4s ease;
+}
+.reveal-stagger.visible > *:nth-child(1){opacity:1;transform:none;transition-delay:.05s}
+.reveal-stagger.visible > *:nth-child(2){opacity:1;transform:none;transition-delay:.15s}
+.reveal-stagger.visible > *:nth-child(3){opacity:1;transform:none;transition-delay:.25s}
+.reveal-stagger.visible > *:nth-child(4){opacity:1;transform:none;transition-delay:.35s}
+
+/* ══════════════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════════════ */
+@media(max-width:480px){
   .why-grid{grid-template-columns:1fr}
+  .hero-line-3{font-size:.95rem}
+}
+@media(max-width:360px){
+  .btn-hero{padding:15px 24px;font-size:1rem}
 }
 </style>
 </head>
@@ -258,21 +544,38 @@ footer strong{color:#888}
 <!-- ══════════════════════ NAV ══════════════════════ -->
 <nav>
   <a href="/" class="logo">
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#FF9AA2" stroke="#FF9AA2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-    DoodleDungeon
+    <div class="logo-mark">DD</div>
+    <span class="logo-name">DoodleDungeon</span>
   </a>
-  <a href="/game" class="nav-play">
-    Play Now
+
+  <a href="/game" class="nav-cta">
+    <div class="live-dot"></div>
+    Enter Dungeon
     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
   </a>
 </nav>
 
 <!-- ══════════════════════ HERO ══════════════════════ -->
 <section class="hero">
+  <!-- particle field -->
+  <div class="particles" aria-hidden="true">
+    <div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
+    <div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
+    <div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
+    <div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
+    <div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
+  </div>
+
   <div class="hero-badge">
     <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    Powered by Gemma 4 · Runs 100% local
+    Powered by Gemma 4 &middot; Runs 100% local
   </div>
+
+  <h1 class="hero-headline">
+    <span class="hero-line-1">Draw a dungeon.</span>
+    <span class="hero-line-2">Defeat it.</span>
+    <span class="hero-line-3">(with your body, unfortunately)</span>
+  </h1>
 
   <!-- Dungeon sketch illustration -->
   <div class="paper-wrap">
@@ -297,14 +600,13 @@ footer strong{color:#888}
       <!-- Room 1: Entrance -->
       <rect id="r1" x="56" y="54" width="80" height="62" rx="7" fill="transparent" stroke="#1a1a1a" stroke-width="2"/>
       <text x="96" y="76" text-anchor="middle" font-family="Caveat" font-size="11" fill="#888">Entrance</text>
-      <!-- star icon + start label -->
       <polygon transform="translate(82,82) scale(0.4)" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#FFB07C"/>
       <text x="100" y="92" font-family="Caveat" font-size="10" fill="#FFB07C">start</text>
 
       <!-- Corridor 1→2 -->
       <line x1="136" y1="85" x2="162" y2="85" stroke="#1a1a1a" stroke-width="2" stroke-dasharray="5 3"/>
 
-      <!-- Room 2: Crypt (skull) -->
+      <!-- Room 2: Crypt -->
       <rect id="r2" x="162" y="48" width="82" height="74" rx="7" fill="transparent" stroke="#1a1a1a" stroke-width="2"/>
       <circle cx="203" cy="72" r="13" fill="none" stroke="#FF9AA2" stroke-width="1.8"/>
       <circle cx="197" cy="71" r="2.5" fill="#FF9AA2"/>
@@ -316,10 +618,9 @@ footer strong{color:#888}
       <!-- Corridor 2→3 -->
       <line x1="244" y1="85" x2="268" y2="85" stroke="#1a1a1a" stroke-width="2" stroke-dasharray="5 3"/>
 
-      <!-- Room 3: Boss — fully inside paper (paper right edge = 340) -->
+      <!-- Room 3: Boss -->
       <rect id="r3" x="268" y="42" width="64" height="86" rx="7" fill="transparent" stroke="#FF9AA2" stroke-width="2.5"/>
       <text x="300" y="62" text-anchor="middle" font-family="Caveat" font-size="9" fill="#FF9AA2" font-weight="700">BOSS</text>
-      <!-- Crown (centered at x=300) -->
       <path d="M284 98 l5-16 7 10 4-16 7 10 5-16 4 16 z" fill="none" stroke="#FF9AA2" stroke-width="1.8" stroke-linejoin="round"/>
 
       <!-- Annotations below rooms -->
@@ -327,9 +628,8 @@ footer strong{color:#888}
       <text x="203" y="134" text-anchor="middle" font-family="Caveat" font-size="9" fill="#aaa">8 push-ups</text>
       <text x="300" y="140" text-anchor="middle" font-family="Caveat" font-size="9" fill="#FF9AA2">20 burpees</text>
 
-      <!-- Title -->
+      <!-- Title + sword -->
       <text x="174" y="178" text-anchor="middle" font-family="Caveat" font-size="14" fill="#1a1a1a" font-weight="700">MY DUNGEON</text>
-      <!-- sword icon: blade, crossguard, pommel -->
       <line x1="211" y1="169" x2="211" y2="182" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/>
       <line x1="206" y1="174" x2="216" y2="174" stroke="#1a1a1a" stroke-width="1.8" stroke-linecap="round"/>
       <circle cx="211" cy="183" r="2.2" fill="#1a1a1a"/>
@@ -345,7 +645,7 @@ footer strong{color:#888}
     </div>
     <div class="chip chip-2">
       <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      AI reading…
+      AI reading&hellip;
     </div>
     <div class="chip chip-3">
       <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>
@@ -357,35 +657,26 @@ footer strong{color:#888}
     </div>
   </div>
 
-  <h1>
-    <span class="line-1">Draw a dungeon.</span>
-    Defeat it.
-    <span class="line-3 caveat">(with your body, unfortunately)</span>
-  </h1>
-  <p class="hero-sub" style="margin-top:14px">
-    Sketch rooms on paper. Snap a photo. <strong>Gemma 4 AI</strong> builds a living world from your doodle.<br>
-    Every monster costs real reps. No cheating.
-  </p>
-
-  <div>
+  <!-- CTA row -->
+  <div class="hero-cta-row">
     <a href="/game" class="btn-hero">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>
       Begin Your Quest
     </a>
-    <a href="#how" class="btn-ghost">How it works ↓</a>
+    <a href="#how" class="btn-ghost">How it works &#8595;</a>
   </div>
 
   <div class="hero-pills">
     <span class="hero-pill">
-      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       Runs locally
     </span>
     <span class="hero-pill">
-      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       No cloud
     </span>
     <span class="hero-pill">
-      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.88 5.76a2 2 0 0 0 1.36 1.36L21 12l-5.76 1.88a2 2 0 0 0-1.36 1.36L12 21l-1.88-5.76a2 2 0 0 0-1.36-1.36L3 12l5.76-1.88a2 2 0 0 0 1.36-1.36L12 3z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.88 5.76a2 2 0 0 0 1.36 1.36L21 12l-5.76 1.88a2 2 0 0 0-1.36 1.36L12 21l-1.88-5.76a2 2 0 0 0-1.36-1.36L3 12l5.76-1.88a2 2 0 0 0 1.36-1.36L12 3z"/></svg>
       Gemma 4B + 26B
     </span>
     <span class="hero-pill">
@@ -395,113 +686,162 @@ footer strong{color:#888}
   </div>
 </section>
 
-<div class="divider"></div>
-
 <!-- ══════════════════════ HOW IT WORKS ══════════════════════ -->
-<section class="section reveal" id="how">
-  <p class="sec-eyebrow">the ritual</p>
-  <h2 class="sec-title">Three steps<br>to glory.</h2>
-  <p class="sec-sub">No gym membership. No app store. Just paper, your phone, and the will to not be embarrassed by a goblin.</p>
+<section id="how" class="reveal">
+  <div class="how-inner">
+    <p class="sec-eyebrow">the ritual</p>
+    <h2 class="sec-title">Three steps<br>to glory.</h2>
+    <p class="sec-sub">No gym membership. No app store. Just paper, your phone, and the will to not be embarrassed by a goblin.</p>
 
-  <div class="steps">
-    <div class="step">
-      <div class="step-num-wrap">
-        <span class="step-num">01</span>
-        <div class="step-icon-ring">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
-        </div>
-      </div>
-      <div>
-        <h3>Doodle your dungeon</h3>
-        <p>Grab any paper. Draw rooms, label enemies with skulls, mark the boss with a crown, connect corridors however you want. It doesn't have to be pretty. That's kind of the point.</p>
-        <span class="step-tag" style="background:var(--peach)">Pen + paper only</span>
-      </div>
+    <div class="quest-board-header">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Active Quest Board
     </div>
-
-    <div class="step">
-      <div class="step-num-wrap">
-        <span class="step-num">02</span>
-        <div class="step-icon-ring">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    <div class="quest-board-body">
+      <div class="steps">
+        <div class="step">
+          <div class="step-num-wrap">
+            <span class="step-num">01</span>
+            <div class="step-icon-ring">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+            </div>
+          </div>
+          <div>
+            <h3>Doodle your dungeon</h3>
+            <p>Grab any paper. Draw rooms, label enemies with skulls, mark the boss with a crown, connect corridors however you want. It doesn't have to be pretty. That's kind of the point.</p>
+            <span class="step-tag">Pen + paper only</span>
+          </div>
         </div>
-      </div>
-      <div>
-        <h3>Summon the world</h3>
-        <p>Snap a photo. Gemma 4's vision model reads your sketch and generates a full dungeon — named rooms, lore, enemies with backstories, and a boss with a deep personal grudge.</p>
-        <span class="step-tag" style="background:var(--mint)">128K context · Remembers everything</span>
-      </div>
-    </div>
 
-    <div class="step">
-      <div class="step-num-wrap">
-        <span class="step-num">03</span>
-        <div class="step-icon-ring">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <div class="step">
+          <div class="step-num-wrap">
+            <span class="step-num">02</span>
+            <div class="step-icon-ring">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+          </div>
+          <div>
+            <h3>Summon the world</h3>
+            <p>Snap a photo. Gemma 4's vision model reads your sketch and generates a full dungeon &mdash; named rooms, lore, enemies with backstories, and a boss with a deep personal grudge.</p>
+            <span class="step-tag">128K context &middot; Remembers everything</span>
+          </div>
         </div>
-      </div>
-      <div>
-        <h3>Sweat through it</h3>
-        <p>Each monster demands reps. Point your camera, do your squats. AI watches your form — sloppy reps deal less damage, and enemies hit back. Perfect form? Critical hit.</p>
-        <span class="step-tag" style="background:var(--pink)">Real reps · Real damage</span>
+
+        <div class="step">
+          <div class="step-num-wrap">
+            <span class="step-num">03</span>
+            <div class="step-icon-ring">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+          </div>
+          <div>
+            <h3>Sweat through it</h3>
+            <p>Each monster demands reps. Point your camera, do your squats. AI watches your form &mdash; sloppy reps deal less damage, and enemies hit back. Perfect form? Critical hit.</p>
+            <span class="step-tag">Real reps &middot; Real damage</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
-
 <!-- ══════════════════════ CLASSES ══════════════════════ -->
-<section class="section reveal">
+<div class="divider" style="margin-top:0"></div>
+<section class="classes-section reveal">
   <p class="sec-eyebrow">your hero</p>
   <h2 class="sec-title">Pick a class.<br>Pick your pain.</h2>
   <p class="sec-sub">Each class specialises in different exercises. Choose the suffering that suits you best.</p>
+  <div class="char-select-label">&#x25B6; Character Select</div>
 
-  <div class="classes">
-    <div class="cls">
+  <div class="classes reveal-stagger">
+
+    <!-- WARRIOR -->
+    <div class="cls" data-class="CLASS I">
       <div class="cls-thumb" style="background:#FFE8E8">
-        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>
       </div>
-      <div style="flex:1">
+      <div style="flex:1;min-width:0">
         <div class="cls-name">Warrior</div>
-        <div class="cls-desc">Max HP · "My legs are weapons"</div>
+        <div class="cls-sub">"My legs are weapons"</div>
         <div class="cls-exercises">
           <span class="ex-pill">Squats</span>
           <span class="ex-pill">Push-ups</span>
           <span class="ex-pill">Burpees</span>
         </div>
+        <div class="cls-stats">
+          <div class="stat-row">
+            <span class="stat-label">HP</span>
+            <div class="stat-track"><div class="stat-fill" style="width:100%;background:var(--pink)"></div></div>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">STR</span>
+            <div class="stat-track"><div class="stat-fill" style="width:90%;background:var(--orange)"></div></div>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">AGI</span>
+            <div class="stat-track"><div class="stat-fill" style="width:55%;background:var(--mint)"></div></div>
+          </div>
+        </div>
       </div>
-      <div style="background:var(--pink);border:2px solid var(--dark);border-radius:50px;padding:4px 12px;font-size:.65rem;font-weight:700;flex-shrink:0">HP ●●●●●</div>
     </div>
 
-    <div class="cls">
+    <!-- RANGER -->
+    <div class="cls" data-class="CLASS II">
       <div class="cls-thumb" style="background:#E4F8F0">
-        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
       </div>
-      <div style="flex:1">
+      <div style="flex:1;min-width:0">
         <div class="cls-name">Ranger</div>
-        <div class="cls-desc">Max Agility · "I never stop moving"</div>
+        <div class="cls-sub">"I never stop moving"</div>
         <div class="cls-exercises">
           <span class="ex-pill">Jumping Jacks</span>
           <span class="ex-pill">High Knees</span>
           <span class="ex-pill">Lunges</span>
         </div>
+        <div class="cls-stats">
+          <div class="stat-row">
+            <span class="stat-label">HP</span>
+            <div class="stat-track"><div class="stat-fill" style="width:65%;background:var(--pink)"></div></div>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">STR</span>
+            <div class="stat-track"><div class="stat-fill" style="width:60%;background:var(--orange)"></div></div>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">AGI</span>
+            <div class="stat-track"><div class="stat-fill" style="width:100%;background:var(--mint)"></div></div>
+          </div>
+        </div>
       </div>
-      <div style="background:var(--mint);border:2px solid var(--dark);border-radius:50px;padding:4px 12px;font-size:.65rem;font-weight:700;flex-shrink:0">AGI ●●●●●</div>
     </div>
 
-    <div class="cls">
+    <!-- MAGE -->
+    <div class="cls" data-class="CLASS III">
       <div class="cls-thumb" style="background:#FFF5E1">
-        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.88 5.76a2 2 0 0 0 1.36 1.36L21 12l-5.76 1.88a2 2 0 0 0-1.36 1.36L12 21l-1.88-5.76a2 2 0 0 0-1.36-1.36L3 12l5.76-1.88a2 2 0 0 0 1.36-1.36L12 3z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.88 5.76a2 2 0 0 0 1.36 1.36L21 12l-5.76 1.88a2 2 0 0 0-1.36 1.36L12 21l-1.88-5.76a2 2 0 0 0-1.36-1.36L3 12l5.76-1.88a2 2 0 0 0 1.36-1.36L12 3z"/></svg>
       </div>
-      <div style="flex:1">
+      <div style="flex:1;min-width:0">
         <div class="cls-name">Mage</div>
-        <div class="cls-desc">Max Endurance · "Core of steel"</div>
+        <div class="cls-sub">"Core of absolute steel"</div>
         <div class="cls-exercises">
           <span class="ex-pill">Plank Hold</span>
           <span class="ex-pill">Mountain Climbers</span>
         </div>
+        <div class="cls-stats">
+          <div class="stat-row">
+            <span class="stat-label">HP</span>
+            <div class="stat-track"><div class="stat-fill" style="width:50%;background:var(--pink)"></div></div>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">END</span>
+            <div class="stat-track"><div class="stat-fill" style="width:100%;background:var(--orange)"></div></div>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">PWR</span>
+            <div class="stat-track"><div class="stat-fill" style="width:85%;background:var(--mint)"></div></div>
+          </div>
+        </div>
       </div>
-      <div style="background:var(--orange);border:2px solid var(--dark);border-radius:50px;padding:4px 12px;font-size:.65rem;font-weight:700;flex-shrink:0">END ●●●●●</div>
     </div>
   </div>
 </section>
@@ -522,7 +862,6 @@ footer strong{color:#888}
       <h3>100% local. Zero cloud.</h3>
       <p>Your workout video never leaves your device. Gemma runs on your machine via Ollama.</p>
     </div>
-
     <div class="why-card">
       <div class="why-icon" style="background:var(--peach)">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
@@ -530,7 +869,6 @@ footer strong{color:#888}
       <h3>AI judges your form.</h3>
       <p>Half-squat? Doesn't count. The model only rewards clean, full-range reps.</p>
     </div>
-
     <div class="why-card">
       <div class="why-icon" style="background:var(--mint)">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
@@ -538,7 +876,6 @@ footer strong{color:#888}
       <h3>Your doodle. Your world.</h3>
       <p>Every dungeon is generated from your unique sketch. No two runs are ever the same.</p>
     </div>
-
     <div class="why-card">
       <div class="why-icon" style="background:var(--pink)">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
@@ -550,30 +887,35 @@ footer strong{color:#888}
 </section>
 
 <!-- ══════════════════════ FINAL CTA ══════════════════════ -->
-<div class="final-cta reveal">
-  <span class="final-eyebrow">you've been warned.</span>
-  <h2>Your dungeon<br>awaits.</h2>
-  <p>Grab a pen. Draw some rooms. Then do squats until the boss is dead. It's just that simple. (It's not.)</p>
-  <a href="/game" class="btn-final">
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>
-    Begin Quest
-  </a>
+<div class="final-cta-wrap reveal">
+  <div class="final-cta">
+    <p class="final-quote">
+      Your dungeon<br>
+      <em>won't clear itself.</em>
+    </p>
+    <p class="final-tagline">
+      Grab a pen. Draw some rooms. Then do squats until the boss is dead.<br>
+      It's just that simple. (It's not.)
+    </p>
+    <a href="/game" class="btn-final">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>
+      Enter the Dungeon
+    </a>
+  </div>
 </div>
 
 <footer>
-  <p>Powered by <strong>Gemma 4B</strong> (vision · form scoring) + <strong>Gemma 26B</strong> (narrative) · Ollama · 100% local</p>
+  <p>Powered by <strong>Gemma 4B</strong> (vision &middot; form scoring) + <strong>Gemma 26B</strong> (narrative) &middot; Ollama &middot; 100% local</p>
 </footer>
 
 <script>
 // ── Scan beam room lighting ────────────────────────────────────────────────
-// The beam takes 3.2s to sweep. Light up rooms as beam passes over them.
 const CYCLE = 3200;
 const ROOMS = [
   { el: document.getElementById('r1'), delay: 300,  fill: '#FFE0C0' },
   { el: document.getElementById('r2'), delay: 1100, fill: '#FFE0E8' },
   { el: document.getElementById('r3'), delay: 1900, fill: '#FFD8B1' },
 ];
-
 function runLightCycle() {
   ROOMS.forEach(r => { if (r.el) r.el.setAttribute('fill', 'transparent'); });
   ROOMS.forEach(({ el, delay, fill }) => {
@@ -588,12 +930,30 @@ runLightCycle();
 setInterval(runLightCycle, CYCLE);
 
 // ── Scroll reveal ──────────────────────────────────────────────────────────
-const observer = new IntersectionObserver((entries) => {
+const revealObs = new IntersectionObserver((entries) => {
   entries.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      revealObs.unobserve(e.target);
+    }
   });
-}, { threshold: 0.12 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => revealObs.observe(el));
+
+// ── Stat bar trigger on hover ──────────────────────────────────────────────
+// Also trigger bars-in after a short delay on page load for visible cards
+setTimeout(() => {
+  document.querySelectorAll('.cls').forEach(card => {
+    const rect = card.getBoundingClientRect();
+    if (rect.top < window.innerHeight) {
+      card.classList.add('bars-in');
+    }
+  });
+}, 600);
+
+document.querySelectorAll('.cls').forEach(card => {
+  card.addEventListener('mouseenter', () => card.classList.add('bars-in'));
+});
 </script>
 </body>
 </html>
