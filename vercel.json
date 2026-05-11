@@ -6,10 +6,5 @@
     { "src": "^/game$",    "dest": "/index.html"   },
     { "src": "^/$",        "dest": "/landing.html"  },
     { "handle": "filesystem" }
-  ],
-  "functions": {
-    "api/index.py": {
-      "maxDuration": 60
-    }
-  }
+  ]
 }
