@@ -946,11 +946,10 @@ async def verify_google_key(req: GoogleKeyRequest):
         raise HTTPException(400, f"Key check failed: {e}")
 
 
-# ── Serve frontend (local dev only — Vercel serves static files itself) ────────
-if not IS_VERCEL:
-    frontend_dir = Path(__file__).parent.parent / "frontend"
-    if frontend_dir.exists():
-        app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
+# ── Serve frontend ────────────────────────────────────────────────────────────
+frontend_dir = Path(__file__).parent.parent / "frontend"
+if frontend_dir.exists():
+    app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
 
 
 if __name__ == "__main__":
