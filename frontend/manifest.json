@@ -2,7 +2,7 @@
   "name": "DoodleDungeon",
   "short_name": "DoodleDungeon",
   "description": "Draw a dungeon. Sweat your spells.",
-  "start_url": "/",
+  "start_url": "/game",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#FFF5E1",

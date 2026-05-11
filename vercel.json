@@ -1,10 +1,8 @@
 {
   "version": 2,
   "outputDirectory": "frontend",
-  "routes": [
-    { "src": "^/api/(.*)", "dest": "/api/index.py" },
-    { "src": "^/game$",    "dest": "/index.html"   },
-    { "src": "^/$",        "dest": "/landing.html"  },
-    { "handle": "filesystem" }
+  "rewrites": [
+    { "source": "/game",       "destination": "/game.html"   },
+    { "source": "/api/:path*", "destination": "/api/index.py" }
   ]
 }

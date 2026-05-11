@@ -2,2236 +2,598 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>DoodleDungeon</title>
-<meta name="theme-color" content="#FFB07C">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="DoodleDungeon">
-<link rel="manifest" href="/manifest.json">
-<link rel="apple-touch-icon" href="/icon-192.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DoodleDungeon — Draw a dungeon. Defeat it with your body.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
 <style>
+/* ── Reset & base ─────────────────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:#FFF5E1;background-image:radial-gradient(circle,#d4c4a0 1.2px,transparent 1.2px);background-size:22px 22px;font-family:'Fredoka',-apple-system,sans-serif;color:#1a1a1a;min-height:100vh;overflow-x:hidden}
-
-/* ── Screens ── */
-.screen{display:none;min-height:100vh;padding:20px 20px 44px;flex-direction:column}
-.screen.active{display:flex}
-
-/* ── Typography ── */
-h1{font-size:2.3rem;font-weight:700;line-height:1.25}
-h2{font-size:1.4rem;font-weight:700}
-h3{font-size:1rem;font-weight:600}
-p{line-height:1.6}
-.caveat{font-family:'Caveat',cursive}
-.clr-orange{color:#FFB07C}
-.clr-pink{color:#FF9AA2}
-.clr-mint{color:#A8E6CF}
-
-/* ── Cards ── */
-.card{background:#fff;border:2.5px solid #1a1a1a;border-radius:20px;padding:16px;margin-bottom:12px}
-.card-peach{background:#FFD8B1}
-.card-pink{background:#FF9AA2}
-.card-mint{background:#A8E6CF}
-.card-cream{background:#FFF5E1}
-.card-dark{background:#1a1a1a;color:#FFF5E1}
-
-/* ── Buttons ── */
-.btn{display:block;width:100%;padding:15px 20px;border:2.5px solid #1a1a1a;border-radius:50px;font-family:'Fredoka',sans-serif;font-size:1.05rem;font-weight:600;cursor:pointer;text-align:center;margin-bottom:10px;transition:transform .1s,opacity .15s;background:#fff;color:#1a1a1a}
-.btn:active{transform:scale(.97);opacity:.92}
-.btn-primary{background:#FFB07C}
-.btn-mint{background:#A8E6CF}
-.btn-dark{background:#1a1a1a;color:#FFF5E1;border-color:#1a1a1a}
-.btn-ghost{background:transparent;border-color:#ccc;color:#999;font-size:.9rem;padding:11px}
-.btn-row{display:flex;gap:10px}
-.btn-row .btn{flex:1;margin-bottom:0}
-
-/* ── Pills ── */
-.pill{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:50px;font-size:.78rem;font-weight:600;border:2px solid #1a1a1a}
-.pill-cream{background:#FFF5E1}
-.pill-orange{background:#FFB07C}
-.pill-mint{background:#A8E6CF}
-.pill-pink{background:#FF9AA2}
-.pill-peach{background:#FFD8B1}
-.pill-dark{background:#1a1a1a;color:#fff}
-
-/* ── HP / XP bars ── */
-.hp-track{background:#e8ddd0;border:2px solid #1a1a1a;border-radius:10px;height:13px;overflow:hidden;margin:6px 0}
-.hp-fill{height:100%;border-radius:8px;transition:width .4s ease}
-.hp-enemy{background:#FF9AA2}
-.hp-player{background:#A8E6CF}
-.hp-xp{background:#FFB07C}
-
-/* ── Input ── */
-.input-field{width:100%;background:#fff;border:2.5px solid #1a1a1a;border-radius:14px;padding:13px 16px;color:#1a1a1a;font-family:'Fredoka',sans-serif;font-size:1rem;margin-bottom:14px;outline:none;-webkit-appearance:none}
-.input-field:focus{border-color:#FFB07C}
-.input-field::placeholder{color:#bbb}
-
-/* ── Navigation ── */
-.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-shrink:0}
-.top-bar-title{display:flex;justify-content:center;align-items:center;position:relative;margin-bottom:20px;min-height:40px;flex-shrink:0}
-.back-btn{background:#fff;border:2.5px solid #1a1a1a;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;flex-shrink:0;position:absolute;left:0}
-.step-badge{background:#1a1a1a;color:#fff;border-radius:20px;padding:3px 10px;font-size:.72rem;font-weight:700;position:absolute;right:0}
-
-/* ── Game header (world screen) ── */
-.game-header{display:flex;justify-content:space-between;align-items:center;background:#fff;border:2.5px solid #1a1a1a;border-radius:50px;padding:8px 18px;margin-bottom:14px;flex-shrink:0}
-.header-name{font-size:.85rem;font-weight:700}
-.header-hp{font-size:.82rem;font-weight:700;color:#FF9AA2}
-
-/* ── Class cards ── */
-.class-card{background:#fff;border:2.5px solid #1a1a1a;border-radius:18px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:background .15s}
-.class-card.selected{background:#FF9AA2}
-.class-thumb{width:58px;height:58px;background:#FFF5E1;border:2px solid #1a1a1a;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0}
-.class-name{font-size:1rem;font-weight:700;margin-bottom:2px}
-.class-tagline{font-size:.73rem;color:#666;margin-bottom:4px}
-.stat-row{display:flex;align-items:center;gap:6px;font-size:.68rem;color:#888;margin-top:3px}
-.stat-label{width:26px;font-weight:700}
-.dots{display:flex;gap:3px}
-.dot{width:9px;height:9px;border-radius:50%;border:1.5px solid #1a1a1a;flex-shrink:0}
-.dot.on{background:#1a1a1a}
-
-/* ── Camera permission pills ── */
-.perm-pill{display:flex;align-items:center;gap:10px;background:#A8E6CF;border:2px solid #1a1a1a;border-radius:50px;padding:11px 18px;margin-bottom:10px;font-size:.88rem;font-weight:600}
-.perm-check{width:22px;height:22px;background:#fff;border:2px solid #1a1a1a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0}
-
-/* ── Sketch preview ── */
-#sketch-wrap{display:none;position:relative;border-radius:16px;overflow:hidden;margin-bottom:14px;border:2.5px solid #1a1a1a}
-#sketch-preview{width:100%;display:block;max-height:260px;object-fit:contain;background:#FFF5E1}
-#scan-line{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#FFB07C,transparent);display:none}
-@keyframes scanmove{0%{top:0}100%{top:calc(100% - 3px)}}
-#scan-line.active{display:block;animation:scanmove 1.8s ease-in-out infinite}
-#scan-reveal{display:none;position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85));padding:24px 14px 14px}
-
-/* ── Room cards ── */
-.room-card{background:#fff;border:2.5px solid #1a1a1a;border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer;transition:background .15s}
-.room-card:active,.room-card:hover{background:#FFD8B1}
-.room-card.cleared{opacity:.5;cursor:default}
-.room-card.cleared:hover,.room-card.cleared:active{background:#fff}
-.room-card.boss{background:#FFD8B1}
-.room-card.locked{opacity:.35;cursor:not-allowed;background:#f0ece4!important}
-.room-card.locked:hover,.room-card.locked:active{background:#f0ece4!important}
-.room-card.safe-rest{background:#E8F5E9;cursor:pointer}
-.room-card.safe-rest:active,.room-card.safe-rest:hover{background:#D4EDDA}
-
-/* ── Narrative ── */
-.narrative{background:#fff;border:2.5px solid #1a1a1a;border-radius:16px;padding:14px;font-family:'Caveat',cursive;font-size:1.05rem;line-height:1.65;color:#333;min-height:64px;max-height:150px;overflow-y:auto;margin-bottom:12px}
-
-/* ── Combat arena ── */
-.combat-arena{background:#1a1a1a;position:relative;overflow:hidden;width:100%;aspect-ratio:3/4;max-height:62vh;flex-shrink:0}
-#camera-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.92}
-#camera-canvas{display:none}
-.combat-overlay{position:absolute;top:50%;transform:translateY(-50%);left:10px;right:10px;display:flex;justify-content:space-between;pointer-events:none;z-index:4}
-/* Desktop: side-by-side */
-@media(min-width:640px){
-  #screen-combat{flex-direction:row!important;padding:0!important}
-  .combat-arena{aspect-ratio:auto!important;max-height:100vh!important;height:100vh;width:auto;flex:0 0 45vw}
-  #combat-controls{overflow-y:auto;max-height:100vh}
+:root{
+  --cream:#FFF5E1;--dot:#d4c4a0;--orange:#FFB07C;--pink:#FF9AA2;--mint:#A8E6CF;
+  --peach:#FFD8B1;--dark:#1a1a1a;--border:2.5px solid #1a1a1a;
 }
-.rep-overlay-pill{background:rgba(255,245,225,.92);border:2px solid #1a1a1a;border-radius:20px;padding:4px 12px;font-size:.78rem;font-weight:700}
-.quality-pill{border:2px solid #1a1a1a;border-radius:20px;padding:4px 12px;font-size:.78rem;font-weight:700}
-.q-perfect{background:#A8E6CF}
-.q-good{background:#FFD8B1}
-.q-sloppy{background:#FFB07C}
-.q-miss{background:#FF9AA2}
-.enemy-display{text-align:center;position:relative;z-index:1}
-.boss-badge{background:#1a1a1a;color:#FFD8B1;border-radius:20px;padding:2px 12px;font-size:.65rem;font-weight:700;display:inline-block;margin-top:6px;letter-spacing:1px}
+html{scroll-behavior:smooth}
+body{
+  background:var(--cream);
+  background-image:radial-gradient(circle,var(--dot) 1.2px,transparent 1.2px);
+  background-size:22px 22px;
+  font-family:'Fredoka',-apple-system,sans-serif;
+  color:var(--dark);
+  overflow-x:hidden;
+}
+.caveat{font-family:'Caveat',cursive}
 
-/* ── Rep counter ── */
-.rep-count-big{font-size:2.8rem;font-weight:700;line-height:1}
-.rep-count-label{font-size:.72rem;color:#888;margin-top:2px}
+/* ── Nav ─────────────────────────────────────────────────────────────────── */
+nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(255,245,225,.92);backdrop-filter:blur(12px);
+  border-bottom:2px solid var(--dark);
+  padding:12px 20px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.logo{display:flex;align-items:center;gap:8px;font-size:1.05rem;font-weight:700;text-decoration:none;color:var(--dark)}
+.nav-play{
+  background:var(--dark);color:var(--cream);
+  border:2px solid var(--dark);border-radius:50px;
+  padding:10px 22px;font-family:'Fredoka',sans-serif;font-size:.9rem;font-weight:700;
+  text-decoration:none;cursor:pointer;transition:transform .1s,background .15s;
+  display:flex;align-items:center;gap:7px;
+}
+.nav-play:hover{background:var(--orange);color:var(--dark);border-color:var(--dark)}
+.nav-play:active{transform:scale(.96)}
 
-/* ── World map ── */
-#dungeon-map{width:100%;border-radius:14px;background:#FFF5E1;border:2.5px solid #1a1a1a;margin-bottom:14px;display:block;touch-action:manipulation}
-@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
-.room-glow{animation:pulse 1.5s ease-in-out infinite}
+/* ── Hero ────────────────────────────────────────────────────────────────── */
+.hero{
+  text-align:center;padding:44px 20px 52px;max-width:520px;margin:0 auto;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--pink);border:2px solid var(--dark);border-radius:50px;
+  padding:5px 14px;font-size:.7rem;font-weight:700;letter-spacing:.8px;
+  margin-bottom:24px;text-transform:uppercase;
+}
 
-/* ── Spinner ── */
-.spinner{width:36px;height:36px;border:3px solid #FFD8B1;border-top-color:#FFB07C;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 14px}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* ── Paper illustration ──────────────────────────────────────────────────── */
+.paper-wrap{
+  position:relative;
+  width:min(420px, calc(100vw - 64px));
+  margin:0 auto 52px;
+  filter:drop-shadow(4px 6px 0px rgba(0,0,0,.15));
+}
+#hero-svg{width:100%;height:auto;display:block}
 
-/* ── Streaming cursor ── */
-.stream-cursor{display:inline-block;animation:blink .8s step-end infinite}
-@keyframes blink{50%{opacity:0}}
+/* Scan beam */
+.scan-beam{
+  position:absolute;left:3%;right:3%;height:3px;
+  background:linear-gradient(90deg,transparent 0%,var(--orange) 30%,#fff 50%,var(--orange) 70%,transparent 100%);
+  box-shadow:0 0 18px 6px rgba(255,176,124,.5);
+  border-radius:2px;top:5%;
+  animation:beam-sweep 3.2s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes beam-sweep{
+  0%{top:5%;opacity:0}
+  8%{opacity:1}
+  90%{opacity:1}
+  100%{top:90%;opacity:0}
+}
 
-/* ── Flash ── */
-@keyframes flashOrange{0%,100%{background:#FFF5E1}50%{background:#FFE4CC}}
-@keyframes flashPink{0%,100%{background:#FFF5E1}50%{background:#FFE0E5}}
-.flash-hit{animation:flashOrange .3s ease}
-.flash-dmg{animation:flashPink .3s ease}
+/* Floating chips */
+.chip{
+  position:absolute;background:#fff;border:2px solid var(--dark);
+  border-radius:50px;padding:5px 12px;font-size:.68rem;font-weight:700;
+  white-space:nowrap;display:flex;align-items:center;gap:5px;
+  box-shadow:2px 2px 0 var(--dark);
+}
+.chip-1{top:-8px;left:-20px;background:var(--orange);animation:float 3s ease-in-out infinite}
+.chip-2{top:10px;right:-30px;background:var(--mint);animation:float 3.5s ease-in-out infinite;animation-delay:.7s}
+.chip-3{bottom:0px;left:-24px;background:var(--pink);animation:float 2.8s ease-in-out infinite;animation-delay:1.3s}
+.chip-4{bottom:12px;right:-22px;background:var(--peach);animation:float 3.2s ease-in-out infinite;animation-delay:.4s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@media(max-width:420px){
+  .chip{font-size:.6rem;padding:4px 9px;gap:4px}
+  .chip-1{left:-6px}.chip-2{right:-6px}.chip-3{left:-6px}.chip-4{right:-6px}
+}
 
-/* ── Settings panel ── */
-#settings-panel{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2.5px solid #1a1a1a;border-radius:20px 20px 0 0;padding:20px;z-index:100}
+/* ── Hero text ───────────────────────────────────────────────────────────── */
+.hero h1{font-size:2.8rem;font-weight:700;line-height:1.05;margin-bottom:14px}
+.hero h1 .line-1{display:block;font-family:'Caveat',cursive;font-size:3.4rem;color:var(--orange);line-height:1}
+.hero h1 .line-3{display:block;font-size:1rem;color:#888;font-weight:600;margin-top:4px;font-family:'Caveat',cursive}
+.hero-sub{font-size:.95rem;color:#666;line-height:1.7;margin-bottom:28px;max-width:360px;margin-left:auto;margin-right:auto}
+.hero-sub strong{color:var(--dark)}
 
-/* ── Sketch mode toggle ── */
-.mode-btn{background:#fff;border:2.5px solid #1a1a1a;border-radius:50px;padding:10px;font-family:'Fredoka',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;flex:1;text-align:center;transition:background .15s,color .15s}
-.mode-btn.active{background:#1a1a1a;color:#FFF5E1}
-.theme-chip{background:#fff;border:2.5px solid #1a1a1a;border-radius:14px;padding:11px 8px;font-family:'Fredoka',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-align:center;transition:background .15s;width:100%}
-.theme-chip.selected{background:#FFB07C}
-.size-chip{background:#fff;border:2.5px solid #1a1a1a;border-radius:50px;padding:10px;font-family:'Fredoka',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;flex:1;text-align:center;transition:background .15s,color .15s}
-.size-chip.selected{background:#1a1a1a;color:#FFF5E1}
+.btn-hero{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--dark);color:var(--cream);
+  border:2.5px solid var(--dark);border-radius:50px;
+  padding:16px 32px;font-family:'Fredoka',sans-serif;font-size:1.15rem;font-weight:700;
+  text-decoration:none;cursor:pointer;
+  box-shadow:4px 4px 0 var(--orange);
+  transition:transform .1s,box-shadow .1s;
+}
+.btn-hero:hover{box-shadow:2px 2px 0 var(--orange);transform:translate(2px,2px)}
+.btn-hero:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--orange)}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:6px;
+  color:#888;border-bottom:2px dashed #ccc;padding-bottom:2px;
+  font-size:.88rem;font-weight:600;text-decoration:none;
+  margin-left:18px;transition:color .15s;
+}
+.btn-ghost:hover{color:var(--dark);border-color:var(--dark)}
 
-/* ── Rarity tags ── */
-.rarity-rare{background:#FFB07C;border:1.5px solid #1a1a1a;border-radius:6px;padding:1px 6px;font-size:.63rem;font-weight:700;display:inline-block}
-.rarity-cmn{background:#e8ddd0;border:1.5px solid #1a1a1a;border-radius:6px;padding:1px 6px;font-size:.63rem;font-weight:700;display:inline-block}
+.hero-pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:22px}
+.hero-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--cream);border:2px solid var(--dark);border-radius:50px;
+  padding:4px 12px;font-size:.7rem;font-weight:700;
+}
 
-/* ── Icons ── */
-.icon{display:inline-block;vertical-align:middle;flex-shrink:0}
-/* ── Home illustration animations ── */
-@keyframes sunRaysSpin{to{transform:rotate(360deg)}}
-@keyframes starPulse{0%,100%{opacity:0;transform:scale(.5)}12%{opacity:1;transform:scale(1)}25%,99%{opacity:0;transform:scale(.5)}}
-@keyframes cloudDrift{from{transform:translateX(110vw)}to{transform:translateX(-320px)}}
+/* ── Section shell ───────────────────────────────────────────────────────── */
+.section{padding:56px 20px;max-width:480px;margin:0 auto}
+.sec-eyebrow{
+  font-size:.65rem;font-weight:700;color:#aaa;letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:6px;
+  display:flex;align-items:center;gap:8px;
+}
+.sec-eyebrow::before{content:'';flex:none;width:20px;height:2px;background:var(--orange);border-radius:1px}
+.sec-title{font-size:2rem;font-weight:700;line-height:1.15;margin-bottom:8px}
+.sec-sub{font-size:.9rem;color:#666;line-height:1.6}
+.divider{height:2px;background:linear-gradient(90deg,transparent,var(--dot),transparent);margin:0 20px}
+
+/* ── Steps ───────────────────────────────────────────────────────────────── */
+.steps{margin-top:28px;display:flex;flex-direction:column;gap:0}
+.step{
+  display:flex;align-items:flex-start;gap:16px;
+  padding:20px 0;border-bottom:2px dashed #e8ddd0;
+}
+.step:last-child{border-bottom:none}
+.step-num-wrap{flex-shrink:0;text-align:center}
+.step-num{
+  font-family:'Caveat',cursive;font-size:3.5rem;font-weight:700;
+  color:var(--orange);line-height:1;display:block;
+}
+.step-icon-ring{
+  width:44px;height:44px;background:var(--cream);border:2px solid var(--dark);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  margin:4px auto 0;
+}
+.step h3{font-size:1.1rem;font-weight:700;margin-bottom:4px}
+.step p{font-size:.82rem;color:#666;line-height:1.6}
+.step-tag{
+  display:inline-block;margin-top:8px;
+  border:2px solid var(--dark);border-radius:50px;
+  padding:3px 12px;font-size:.68rem;font-weight:700;
+}
+
+/* ── Classes ─────────────────────────────────────────────────────────────── */
+.classes{margin-top:24px;display:flex;flex-direction:column;gap:12px}
+.cls{
+  background:#fff;border:var(--border);border-radius:20px;
+  padding:16px;display:flex;align-items:center;gap:14px;
+  transition:transform .12s,box-shadow .12s;cursor:default;
+}
+.cls:hover{transform:translateY(-3px);box-shadow:0 6px 0 var(--dark)}
+.cls-thumb{
+  width:56px;height:56px;border-radius:14px;border:2px solid var(--dark);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.cls-name{font-size:1.05rem;font-weight:700;margin-bottom:2px}
+.cls-desc{font-size:.72rem;color:#888;margin-bottom:8px}
+.cls-exercises{display:flex;gap:6px;flex-wrap:wrap}
+.ex-pill{
+  background:var(--cream);border:1.5px solid var(--dark);border-radius:50px;
+  padding:2px 10px;font-size:.65rem;font-weight:600;
+}
+
+/* ── Why cards ───────────────────────────────────────────────────────────── */
+.why-grid{margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.why-card{
+  background:#fff;border:var(--border);border-radius:18px;padding:16px;
+  transition:transform .12s;
+}
+.why-card:hover{transform:translateY(-2px)}
+.why-icon{
+  width:40px;height:40px;border-radius:10px;border:2px solid var(--dark);
+  display:flex;align-items:center;justify-content:center;margin-bottom:10px;
+}
+.why-card h3{font-size:.9rem;font-weight:700;margin-bottom:4px;line-height:1.3}
+.why-card p{font-size:.75rem;color:#777;line-height:1.55}
+
+/* ── Final CTA ───────────────────────────────────────────────────────────── */
+.final-cta{
+  margin:0 20px 64px;padding:44px 24px;
+  background:var(--dark);color:var(--cream);
+  border-radius:24px;border:var(--border);
+  text-align:center;position:relative;overflow:hidden;
+  max-width:440px;margin-left:auto;margin-right:auto;
+  box-shadow:6px 6px 0 var(--orange);
+}
+.final-cta::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(255,176,124,.12) 1.5px,transparent 1.5px);
+  background-size:20px 20px;pointer-events:none;
+}
+.final-eyebrow{
+  font-family:'Caveat',cursive;font-size:1.3rem;color:var(--orange);
+  display:block;margin-bottom:6px;
+}
+.final-cta h2{font-size:2.4rem;font-weight:700;line-height:1.1;margin-bottom:12px}
+.final-cta p{font-size:.88rem;color:#aaa;line-height:1.65;margin-bottom:28px;max-width:300px;margin-left:auto;margin-right:auto}
+.btn-final{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--orange);color:var(--dark);
+  border:2.5px solid var(--orange);border-radius:50px;
+  padding:16px 32px;font-family:'Fredoka',sans-serif;font-size:1.1rem;font-weight:700;
+  text-decoration:none;cursor:pointer;
+  box-shadow:4px 4px 0 rgba(255,245,225,.3);
+  transition:transform .1s,box-shadow .1s;
+}
+.btn-final:hover{box-shadow:2px 2px 0 rgba(255,245,225,.3);transform:translate(2px,2px)}
+.btn-final:active{transform:translate(4px,4px);box-shadow:none}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+footer{
+  text-align:center;padding:20px 20px 44px;
+  font-size:.75rem;color:#bbb;line-height:1.8;
+}
+footer strong{color:#888}
+
+/* ── Scroll reveal ───────────────────────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .5s ease,transform .5s ease}
+.reveal.visible{opacity:1;transform:none}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media(max-width:380px){
+  .hero h1{font-size:2.3rem}
+  .hero h1 .line-1{font-size:2.8rem}
+  .why-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════
-     SCREEN 1 — HOME
-═══════════════════════════════════════════════════════════ -->
-<div id="screen-home" class="screen active">
-  <div class="top-bar">
-    <span class="pill pill-cream" style="gap:6px">
-      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#FF9AA2" stroke="#FF9AA2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      DoodleDungeon
-    </span>
-    <button class="pill pill-cream" onclick="toggleSettings()" style="border:2px solid #1a1a1a;cursor:pointer;background:#FFF5E1;gap:5px">
-      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
-      Settings
-    </button>
+<!-- ══════════════════════ NAV ══════════════════════ -->
+<nav>
+  <a href="/" class="logo">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#FF9AA2" stroke="#FF9AA2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    DoodleDungeon
+  </a>
+  <a href="/game" class="nav-play">
+    Play Now
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </a>
+</nav>
+
+<!-- ══════════════════════ HERO ══════════════════════ -->
+<section class="hero">
+  <div class="hero-badge">
+    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    Powered by Gemma 4 · Runs 100% local
   </div>
 
-  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0">
-    <!-- Scene illustration -->
-    <div style="position:relative;width:100%;height:210px;margin-bottom:8px;overflow:hidden">
+  <!-- Dungeon sketch illustration -->
+  <div class="paper-wrap">
+    <svg id="hero-svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
+      <!-- Paper shadow -->
+      <rect x="16" y="16" width="330" height="190" rx="14" fill="#c8bfaf"/>
+      <!-- Paper -->
+      <rect x="10" y="10" width="330" height="190" rx="14" fill="#fffef8" stroke="#1a1a1a" stroke-width="2"/>
+      <!-- Ruled lines -->
+      <line x1="24" y1="42" x2="334" y2="42" stroke="#e8ddd0" stroke-width="1"/>
+      <line x1="24" y1="58" x2="334" y2="58" stroke="#e8ddd0" stroke-width="1"/>
+      <line x1="24" y1="74" x2="334" y2="74" stroke="#e8ddd0" stroke-width="1"/>
+      <line x1="24" y1="90" x2="334" y2="90" stroke="#e8ddd0" stroke-width="1"/>
+      <line x1="24" y1="106" x2="334" y2="106" stroke="#e8ddd0" stroke-width="1"/>
+      <line x1="24" y1="122" x2="334" y2="122" stroke="#e8ddd0" stroke-width="1"/>
+      <line x1="24" y1="138" x2="334" y2="138" stroke="#e8ddd0" stroke-width="1"/>
+      <line x1="24" y1="154" x2="334" y2="154" stroke="#e8ddd0" stroke-width="1"/>
+      <line x1="24" y1="170" x2="334" y2="170" stroke="#e8ddd0" stroke-width="1"/>
+      <!-- Margin line -->
+      <line x1="44" y1="10" x2="44" y2="200" stroke="#FFD8B1" stroke-width="1.5"/>
 
-      <!-- Star 1 — top centre, blinks first -->
-      <svg viewBox="0 0 24 24" width="22" height="22" xmlns="http://www.w3.org/2000/svg"
-           style="position:absolute;top:14px;left:44%;animation:starPulse 3s ease-in-out infinite;animation-delay:0s">
-        <path d="M12 1L13.5 10.5L23 12L13.5 13.5L12 23L10.5 13.5L1 12L10.5 10.5Z"
-              fill="none" stroke="#555" stroke-width="1.5" stroke-linejoin="round"/>
-      </svg>
+      <!-- Room 1: Entrance -->
+      <rect id="r1" x="56" y="54" width="80" height="62" rx="7" fill="transparent" stroke="#1a1a1a" stroke-width="2"/>
+      <text x="96" y="76" text-anchor="middle" font-family="Caveat" font-size="11" fill="#888">Entrance</text>
+      <!-- star icon + start label -->
+      <polygon transform="translate(82,82) scale(0.4)" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#FFB07C"/>
+      <text x="100" y="92" font-family="Caveat" font-size="10" fill="#FFB07C">start</text>
 
-      <!-- Star 2 — left middle, blinks second -->
-      <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg"
-           style="position:absolute;top:108px;left:18%;animation:starPulse 3s ease-in-out infinite;animation-delay:1s">
-        <path d="M12 1L13.5 10.5L23 12L13.5 13.5L12 23L10.5 13.5L1 12L10.5 10.5Z"
-              fill="none" stroke="#555" stroke-width="1.5" stroke-linejoin="round"/>
-      </svg>
+      <!-- Corridor 1→2 -->
+      <line x1="136" y1="85" x2="162" y2="85" stroke="#1a1a1a" stroke-width="2" stroke-dasharray="5 3"/>
 
-      <!-- Star 3 — lower right, blinks third -->
-      <svg viewBox="0 0 24 24" width="19" height="19" xmlns="http://www.w3.org/2000/svg"
-           style="position:absolute;top:148px;left:66%;animation:starPulse 3s ease-in-out infinite;animation-delay:2s">
-        <path d="M12 1L13.5 10.5L23 12L13.5 13.5L12 23L10.5 13.5L1 12L10.5 10.5Z"
-              fill="none" stroke="#555" stroke-width="1.5" stroke-linejoin="round"/>
-      </svg>
+      <!-- Room 2: Crypt (skull) -->
+      <rect id="r2" x="162" y="48" width="82" height="74" rx="7" fill="transparent" stroke="#1a1a1a" stroke-width="2"/>
+      <circle cx="203" cy="72" r="13" fill="none" stroke="#FF9AA2" stroke-width="1.8"/>
+      <circle cx="197" cy="71" r="2.5" fill="#FF9AA2"/>
+      <circle cx="209" cy="71" r="2.5" fill="#FF9AA2"/>
+      <line x1="200" y1="82" x2="200" y2="88" stroke="#FF9AA2" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="206" y1="82" x2="206" y2="88" stroke="#FF9AA2" stroke-width="1.8" stroke-linecap="round"/>
+      <text x="203" y="107" text-anchor="middle" font-family="Caveat" font-size="9" fill="#aaa">Crypt</text>
 
-      <!-- Sun — upper right, rays rotate, face stays upright -->
-      <svg viewBox="0 0 100 100" width="96" height="96" xmlns="http://www.w3.org/2000/svg"
-           style="position:absolute;top:8px;right:6%">
-        <!-- Rays (spinning) -->
-        <g style="transform-origin:50px 50px;animation:sunRaysSpin 10s linear infinite">
-          <line x1="50" y1="6"  x2="50" y2="19" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="78" y1="22" x2="69" y2="31" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="94" y1="50" x2="81" y2="50" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="78" y1="78" x2="69" y2="69" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="50" y1="94" x2="50" y2="81" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="22" y1="78" x2="31" y2="69" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="6"  y1="50" x2="19" y2="50" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="22" y1="22" x2="31" y2="31" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>
-        </g>
-        <!-- Face (static) -->
-        <circle cx="50" cy="50" r="24" fill="#FFF5E1" stroke="#1a1a1a" stroke-width="2.5"/>
-        <!-- Eyes -->
-        <circle cx="43" cy="46" r="2.5" fill="#1a1a1a"/>
-        <circle cx="57" cy="46" r="2.5" fill="#1a1a1a"/>
-        <!-- Cheek dots -->
-        <circle cx="38" cy="54" r="2.5" fill="#1a1a1a" opacity="0.18"/>
-        <circle cx="62" cy="54" r="2.5" fill="#1a1a1a" opacity="0.18"/>
-        <!-- Smile -->
-        <path d="M42 56 Q50 64 58 56" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/>
-      </svg>
+      <!-- Corridor 2→3 -->
+      <line x1="244" y1="85" x2="268" y2="85" stroke="#1a1a1a" stroke-width="2" stroke-dasharray="5 3"/>
 
-      <!-- Large cloud — upper left area, drifts left -->
-      <svg viewBox="0 0 110 58" width="110" height="58" xmlns="http://www.w3.org/2000/svg"
-           style="position:absolute;top:22px;left:0;animation:cloudDrift 20s linear infinite;animation-delay:-7s">
-        <path d="M8 46 Q8 32 20 30 Q22 16 36 18 Q42 6 56 10 Q66 4 74 16 Q86 14 90 28 Q98 28 96 40 L96 46 Z"
-              fill="#FFF5E1" stroke="#1a1a1a" stroke-width="2.5" stroke-linejoin="round"/>
-      </svg>
+      <!-- Room 3: Boss — fully inside paper (paper right edge = 340) -->
+      <rect id="r3" x="268" y="42" width="64" height="86" rx="7" fill="transparent" stroke="#FF9AA2" stroke-width="2.5"/>
+      <text x="300" y="62" text-anchor="middle" font-family="Caveat" font-size="9" fill="#FF9AA2" font-weight="700">BOSS</text>
+      <!-- Crown (centered at x=300) -->
+      <path d="M284 98 l5-16 7 10 4-16 7 10 5-16 4 16 z" fill="none" stroke="#FF9AA2" stroke-width="1.8" stroke-linejoin="round"/>
 
-      <!-- Small cloud — lower right area, drifts left slower -->
-      <svg viewBox="0 0 80 44" width="80" height="44" xmlns="http://www.w3.org/2000/svg"
-           style="position:absolute;top:148px;left:0;animation:cloudDrift 26s linear infinite;animation-delay:-19s">
-        <path d="M6 34 Q6 24 14 22 Q16 12 26 14 Q30 6 40 8 Q48 4 54 14 Q62 12 64 22 Q70 22 68 30 L68 34 Z"
-              fill="#FFF5E1" stroke="#1a1a1a" stroke-width="2.5" stroke-linejoin="round"/>
-      </svg>
+      <!-- Annotations below rooms -->
+      <text x="96" y="130" text-anchor="middle" font-family="Caveat" font-size="9" fill="#aaa">10 squats</text>
+      <text x="203" y="134" text-anchor="middle" font-family="Caveat" font-size="9" fill="#aaa">8 push-ups</text>
+      <text x="300" y="140" text-anchor="middle" font-family="Caveat" font-size="9" fill="#FF9AA2">20 burpees</text>
 
+      <!-- Title -->
+      <text x="174" y="178" text-anchor="middle" font-family="Caveat" font-size="14" fill="#1a1a1a" font-weight="700">MY DUNGEON</text>
+      <!-- sword icon: blade, crossguard, pommel -->
+      <line x1="211" y1="169" x2="211" y2="182" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/>
+      <line x1="206" y1="174" x2="216" y2="174" stroke="#1a1a1a" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="211" cy="183" r="2.2" fill="#1a1a1a"/>
+    </svg>
+
+    <!-- Animated scan beam -->
+    <div class="scan-beam"></div>
+
+    <!-- Floating status chips -->
+    <div class="chip chip-1">
+      <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      Sketch detected
     </div>
-
-    <!-- Hero card -->
-    <div class="card" style="text-align:center;width:100%;margin-bottom:22px;padding:24px 20px">
-      <h1>Doodle a hero.<br><span class="clr-orange">Sweat</span> your spells.</h1>
-      <svg viewBox="0 0 160 20" xmlns="http://www.w3.org/2000/svg" width="160" height="20" style="margin-top:12px">
-        <path d="M0 10 Q20 0 40 10 Q60 20 80 10 Q100 0 120 10 Q140 20 160 10" stroke="#FFB07C" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      </svg>
+    <div class="chip chip-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      AI reading…
     </div>
-
-    <!-- First-run banner — shown when no backend is configured -->
-    <div id="first-run-banner" onclick="toggleSettings()" style="display:none;background:#A8E6CF;border:2.5px solid #1a1a1a;border-radius:16px;padding:13px 16px;margin-bottom:12px;cursor:pointer;text-align:left">
-      <p style="font-weight:700;font-size:.88rem;margin-bottom:2px;display:flex;align-items:center;gap:6px">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Setup required
-      </p>
-      <p style="font-size:.78rem;color:#1a1a1a;opacity:.7">Tap to choose Google AI Studio (free, mobile) or local Ollama before playing.</p>
+    <div class="chip chip-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>
+      3 rooms found
     </div>
-
-    <button class="btn btn-primary" onclick="showScreen('character')" style="font-size:1.15rem;padding:18px 24px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px">
-      Begin Quest
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
-    <button class="btn" onclick="openJournal()" style="width:100%;font-size:.95rem">Journal</button>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════
-     SCREEN 2 — CHARACTER SELECT
-═══════════════════════════════════════════════════════════ -->
-<div id="screen-character" class="screen">
-  <div class="top-bar-title">
-    <button class="back-btn" onclick="showScreen('home')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <h2>Choose your Hero</h2>
-    <span class="step-badge">2 / 4</span>
-  </div>
-
-  <!-- Selected class preview -->
-  <div id="class-preview-card" class="card card-pink" style="text-align:center;padding:20px;margin-bottom:10px">
-    <span id="preview-badge" class="pill pill-dark" style="font-size:.68rem;margin-bottom:10px">WARRIOR</span>
-    <div id="preview-emoji" style="margin-bottom:6px;display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg></div>
-    <div id="preview-name" style="font-size:1.1rem;font-weight:700">Warrior</div>
-    <div id="preview-quote" class="caveat" style="font-size:1rem;color:#333;margin-top:6px">"Heavy hits via squats &amp; push-ups."</div>
-  </div>
-
-  <p style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:10px">ROSTER · 3 CLASSES</p>
-
-  <!-- Class list -->
-  <div class="class-card selected" onclick="selectClass(this,'warrior')">
-    <div class="class-thumb"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg></div>
-    <div style="flex:1">
-      <div class="class-name">Warrior</div>
-      <div class="class-tagline">Squats · Push-ups · Power</div>
-      <div class="stat-row"><span class="stat-label">HP</span><div class="dots"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div></div></div>
-      <div class="stat-row"><span class="stat-label">ATK</span><div class="dots"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot"></div></div></div>
-      <div class="stat-row"><span class="stat-label">DEF</span><div class="dots"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div></div>
-    </div>
-  </div>
-  <div class="class-card" onclick="selectClass(this,'ranger')">
-    <div class="class-thumb"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-    <div style="flex:1">
-      <div class="class-name">Ranger</div>
-      <div class="class-tagline">Jumping Jacks · High Knees · Cardio</div>
-      <div class="stat-row"><span class="stat-label">HP</span><div class="dots"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot"></div></div></div>
-      <div class="stat-row"><span class="stat-label">ATK</span><div class="dots"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div></div>
-      <div class="stat-row"><span class="stat-label">DEF</span><div class="dots"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot"></div></div></div>
-    </div>
-  </div>
-  <div class="class-card" onclick="selectClass(this,'mage')">
-    <div class="class-thumb"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.88 5.76a2 2 0 0 0 1.36 1.36L21 12l-5.76 1.88a2 2 0 0 0-1.36 1.36L12 21l-1.88-5.76a2 2 0 0 0-1.36-1.36L3 12l5.76-1.88a2 2 0 0 0 1.36-1.36L12 3z"/></svg></div>
-    <div style="flex:1">
-      <div class="class-name">Mage</div>
-      <div class="class-tagline">Plank · Mountain Climbers · Holds</div>
-      <div class="stat-row"><span class="stat-label">HP</span><div class="dots"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div></div>
-      <div class="stat-row"><span class="stat-label">ATK</span><div class="dots"><div class="dot on"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
-      <div class="stat-row"><span class="stat-label">DEF</span><div class="dots"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div></div></div>
+    <div class="chip chip-4">
+      <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FF9AA2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Boss incoming
     </div>
   </div>
 
-  <p style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:10px">DIFFICULTY</p>
-  <div id="difficulty-row" style="display:flex;gap:8px;margin-bottom:14px">
-    <button class="size-chip" onclick="selectDifficulty(this,'easy')" style="flex:1">Easy<br><span style="font-size:.65rem;font-weight:400;color:#aaa">0.6× reps</span></button>
-    <button class="size-chip selected" onclick="selectDifficulty(this,'normal')" style="flex:1">Normal<br><span style="font-size:.65rem;font-weight:400;color:#aaa">1× reps</span></button>
-    <button class="size-chip" onclick="selectDifficulty(this,'hard')" style="flex:1">Hard<br><span style="font-size:.65rem;font-weight:400;color:#aaa">1.5× reps</span></button>
-  </div>
+  <h1>
+    <span class="line-1">Draw a dungeon.</span>
+    Defeat it.
+    <span class="line-3 caveat">(with your body, unfortunately)</span>
+  </h1>
+  <p class="hero-sub" style="margin-top:14px">
+    Sketch rooms on paper. Snap a photo. <strong>Gemma 4 AI</strong> builds a living world from your doodle.<br>
+    Every monster costs real reps. No cheating.
+  </p>
 
-  <input class="input-field" id="player-name" placeholder="Your hero's name..." maxlength="20" autocomplete="off">
-  <button class="btn btn-primary" id="confirm-btn" onclick="createGame()" style="font-size:1.1rem;padding:17px">Confirm Warrior →</button>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════
-     SCREEN 3 — CAMERA PERMISSION
-═══════════════════════════════════════════════════════════ -->
-<div id="screen-camera" class="screen">
-  <div class="top-bar-title">
-    <button class="back-btn" onclick="showScreen('character')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <h2>Camera</h2>
-    <span class="step-badge">3 / 7</span>
-  </div>
-
-  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 0">
-    <div style="margin-bottom:18px"><svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
-
-    <div class="card" style="width:100%;text-align:left;margin-bottom:20px;padding:20px">
-      <h2 style="margin-bottom:10px">Let DoodleDungeon<br>use your <span class="clr-orange">camera</span></h2>
-      <p style="font-size:.85rem;color:#666;line-height:1.65">We need it to scan your hero sketch and watch your reps in combat.</p>
-    </div>
-
-    <div style="width:100%;margin-bottom:22px">
-      <div class="perm-pill"><div class="perm-check">✓</div>Stays on your device</div>
-      <div class="perm-pill"><div class="perm-check">✓</div>Never recorded or uploaded</div>
-      <div class="perm-pill" style="background:#FFD8B1"><div class="perm-check">✓</div>Disable any time in Settings</div>
-    </div>
-
-    <button class="btn btn-primary" onclick="requestCameraPermission()" style="font-size:1.1rem;padding:17px">Allow camera →</button>
-    <button class="btn" onclick="showScreen('sketch')">Not now</button>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════
-     SCREEN 4 — SKETCH SCANNER
-═══════════════════════════════════════════════════════════ -->
-<div id="screen-sketch" class="screen">
-  <div class="top-bar-title">
-    <button class="back-btn" onclick="showScreen('camera')"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <h2>Sketch Scanner</h2>
-    <span class="step-badge">4 / 7</span>
-  </div>
-
-  <!-- Mode toggle -->
-  <div style="display:flex;gap:8px;margin-bottom:16px">
-    <button id="mode-doodle"    class="mode-btn active"  onclick="showDoodleMode()">Doodle</button>
-    <button id="mode-generate"  class="mode-btn"         onclick="showGenerateMode()">Generate</button>
-  </div>
-
-  <!-- ── Doodle section ── -->
-  <div id="doodle-section">
-    <div class="card card-peach" style="margin-bottom:14px">
-      <h3 style="margin-bottom:8px">How to sketch your dungeon:</h3>
-      <p style="font-size:.82rem;color:#333;line-height:1.85">
-        1. Draw rooms as squares or circles<br>
-        2. Connect them with corridors (lines)<br>
-        3. Mark enemies (skull) · treasure ★ · boss [BOSS]<br>
-        4. Take a clear photo in good lighting
-      </p>
-    </div>
-
-    <div id="sketch-wrap">
-      <img id="sketch-preview" alt="Your dungeon sketch">
-      <div id="scan-line"></div>
-      <div id="scan-reveal">
-        <p id="scan-dungeon-name" style="font-size:1.1rem;font-weight:700;color:#FFD8B1"></p>
-        <p id="scan-room-count" style="font-size:.8rem;color:#ddd;margin-top:4px"></p>
-      </div>
-    </div>
-
-    <input type="file" id="sketch-input" accept="image/*" capture="environment" style="display:none" onchange="previewSketch(event)">
-    <button class="btn" onclick="document.getElementById('sketch-input').click()" style="display:flex;align-items:center;justify-content:center;gap:8px"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Photograph Your Sketch</button>
-    <button class="btn btn-primary" id="summon-btn" onclick="generateWorld()" style="display:none;align-items:center;justify-content:center;gap:8px"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Summon the World</button>
-
-    <div id="sketch-loading" style="display:none;text-align:center;padding:20px 0">
-      <div class="spinner"></div>
-      <p id="sketch-loading-text" style="font-weight:700;margin-bottom:4px">Reading your sketch...</p>
-      <p class="caveat" style="color:#999;font-size:1rem">This takes 15–30 seconds</p>
-    </div>
-    <div id="sketch-error" style="display:none;background:#FFE0E5;border:2px solid #FF9AA2;border-radius:14px;padding:14px;margin-top:10px;text-align:center">
-      <p style="font-weight:700;margin-bottom:8px;font-size:.88rem">World generation failed</p>
-      <p id="sketch-error-msg" style="font-size:.78rem;color:#666;margin-bottom:10px"></p>
-      <button class="btn btn-primary" onclick="generateWorld()" style="padding:10px;font-size:.9rem">Try again</button>
-    </div>
-  </div>
-
-  <!-- ── Generate section ── -->
-  <div id="generate-section" style="display:none">
-    <p style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:10px">DUNGEON THEME</p>
-    <div id="theme-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px"></div>
-
-    <p style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:10px">SIZE</p>
-    <div id="size-row" style="display:flex;gap:8px;margin-bottom:20px"></div>
-
-    <button class="btn btn-primary" id="gen-btn" onclick="generateFromOptions()" style="font-size:1.05rem">Generate World</button>
-    <div id="gen-loading" style="display:none;text-align:center;padding:20px 0">
-      <div class="spinner"></div>
-      <p style="font-weight:700;margin-bottom:4px" id="gen-loading-text">Building your dungeon...</p>
-      <p class="caveat" style="color:#999;font-size:1rem">Gemma is writing the world</p>
-    </div>
-    <div id="gen-error" style="display:none;background:#FFE0E5;border:2px solid #FF9AA2;border-radius:14px;padding:14px;margin-top:10px;text-align:center">
-      <p style="font-weight:700;margin-bottom:8px;font-size:.88rem">World generation failed</p>
-      <p id="gen-error-msg" style="font-size:.78rem;color:#666;margin-bottom:10px"></p>
-      <button class="btn btn-primary" onclick="generateFromOptions()" style="padding:10px;font-size:.9rem">Try again</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════
-     SCREEN 5 — WORLD MAP
-═══════════════════════════════════════════════════════════ -->
-<div id="screen-world" class="screen">
-  <div class="game-header" onclick="openStats()" style="cursor:pointer" title="View character stats">
-    <span class="header-name" id="hdr-name">Hero Lv.1</span>
-    <span class="header-hp" id="hdr-hp" style="display:flex;align-items:center;gap:4px"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#FF9AA2" stroke="#FF9AA2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> 120 / 120</span>
-    <button onclick="exitToMenu()" title="Main Menu" style="background:none;border:none;cursor:pointer;padding:4px;color:#aaa;display:flex;align-items:center;line-height:1"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
-  </div>
-
-  <h2 id="dungeon-title" style="margin-bottom:4px">The Dark Keep</h2>
-  <p id="dungeon-lore" class="caveat" style="color:#777;margin-bottom:12px;font-size:1rem;line-height:1.5"></p>
-
-  <div class="narrative" id="world-narrative"></div>
-
-  <p style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:5px"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg> DUNGEON MAP</p>
-  <svg id="dungeon-map" height="190" style="width:100%;border-radius:14px;background:#FFF5E1;border:2.5px solid #1a1a1a;margin-bottom:14px;display:block;touch-action:manipulation"></svg>
-
-  <p style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:5px"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg> ROOMS</p>
-  <div id="rooms-list"></div>
-
-  <div id="inventory-card" style="display:none;margin-top:4px">
-    <p style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:5px"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><line x1="8" y1="11" x2="16" y2="11"/></svg> INVENTORY</p>
-    <div class="card">
-      <p id="inventory-bonus" style="font-size:.78rem;color:#FFB07C;font-weight:700;margin-bottom:10px"></p>
-      <div id="inventory-list"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════
-     SCREEN 6 — COMBAT HUD
-═══════════════════════════════════════════════════════════ -->
-<div id="screen-combat" class="screen" style="padding:0;background:#111;flex-direction:row;align-items:stretch">
-
-  <!-- ── Portrait camera with overlaid HUD ───────────────────────────────── -->
-  <div class="combat-arena">
-    <video id="camera-video" autoplay playsinline muted></video>
-    <canvas id="camera-canvas" style="display:none"></canvas>
-    <canvas id="motion-canvas" style="display:none"></canvas>
-
-    <!-- TOP gradient: enemy info + rep counter -->
-    <div style="position:absolute;top:0;left:0;right:0;z-index:3;background:linear-gradient(to bottom,rgba(0,0,0,.72) 0%,transparent 100%);padding:14px 14px 44px;pointer-events:none">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-            <span id="enemy-name" style="color:#FF9AA2;font-weight:700;font-size:.95rem">Enemy</span>
-            <span id="enemy-counter" style="display:none;font-size:.58rem;background:rgba(255,255,255,.2);color:#fff;border-radius:20px;padding:1px 7px;font-weight:700"></span>
-            <div id="boss-badge-el" style="display:none;background:#FFD8B1;color:#1a1a1a;border-radius:20px;padding:1px 8px;font-size:.6rem;font-weight:700;letter-spacing:1px">BOSS</div>
-          </div>
-          <p id="enemy-lore" style="color:rgba(255,255,255,.55);font-size:.67rem;margin:2px 0 6px;line-height:1.3"></p>
-          <div style="background:rgba(255,255,255,.2);border-radius:4px;height:5px;max-width:180px">
-            <div id="enemy-hp-bar" style="height:100%;border-radius:4px;background:#FF9AA2;transition:width .4s ease;width:100%"></div>
-          </div>
-          <span id="enemy-hp-text" style="color:#FF9AA2;font-size:.67rem;font-weight:700;margin-top:2px;display:block">HP 10/10</span>
-        </div>
-        <!-- Rep counter -->
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:3rem;font-weight:700;color:#fff;line-height:1" id="rep-count">0</div>
-          <div style="color:rgba(255,255,255,.5);font-size:.67rem">/ <span id="reps-needed">10</span> reps</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Mid overlays: rep count pill + quality pill -->
-    <div class="combat-overlay">
-      <span id="rep-overlay" class="rep-overlay-pill"></span>
-      <span id="quality-overlay" class="quality-pill"></span>
-    </div>
-
-    <!-- Enemy emoji (centre) -->
-    <div class="enemy-display" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;text-align:center">
-      <span id="enemy-emoji" style="display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))"></span>
-    </div>
-
-    <!-- BOTTOM gradient: exercise name + player HP + motion ring -->
-    <div style="position:absolute;bottom:0;left:0;right:0;z-index:3;background:linear-gradient(to top,rgba(0,0,0,.75) 0%,transparent 100%);padding:44px 14px 14px;pointer-events:none">
-      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:8px">
-        <div style="flex:1;min-width:0">
-          <p style="color:rgba(255,255,255,.5);font-size:.58rem;font-weight:700;letter-spacing:1px;margin-bottom:1px">DO THIS EXERCISE</p>
-          <p id="exercise-display" style="color:#FFB07C;font-weight:700;font-size:1.1rem;text-transform:capitalize">Squats</p>
-          <p id="form-feedback" class="caveat" style="color:rgba(255,255,255,.75);font-size:.9rem;min-height:16px;margin-top:2px"></p>
-        </div>
-        <!-- Motion ring -->
-        <div id="motion-ring" style="position:relative;flex-shrink:0;width:52px;height:52px;pointer-events:none">
-          <svg viewBox="0 0 52 52" width="52" height="52">
-            <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="5"/>
-            <circle id="motion-arc" cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.2)"
-                    stroke-width="5" stroke-dasharray="0 138.2" stroke-linecap="round"
-                    style="transform:rotate(-90deg);transform-origin:26px 26px;transition:stroke-dasharray .25s,stroke .25s"/>
-          </svg>
-          <span id="motion-label" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700;color:rgba(255,255,255,0.4);font-family:'Fredoka',sans-serif">GO</span>
-        </div>
-      </div>
-      <!-- Player HP bar -->
-      <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
-        <span id="player-hp-label" style="color:rgba(255,255,255,.45);font-size:.6rem;font-weight:700;white-space:nowrap">YOU</span>
-        <div style="flex:1;background:rgba(255,255,255,.2);border-radius:4px;height:5px">
-          <div id="player-hp-bar" style="height:100%;border-radius:4px;background:#A8E6CF;transition:width .4s ease;width:100%"></div>
-        </div>
-        <span id="player-hp-val" style="color:#A8E6CF;font-size:.67rem;font-weight:700;white-space:nowrap"></span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Controls strip ──────────────────────────────────────────────────── -->
-  <div id="combat-controls" style="flex:1;background:#111;padding:12px 16px;display:flex;flex-direction:column;gap:8px;min-width:0">
-    <p class="caveat" style="color:#444;font-size:.88rem;text-align:center;margin:0">ring fills as you move — rep counts automatically ✦</p>
-    <button class="btn btn-primary" id="attack-btn" onclick="captureRep()" style="font-size:1.15rem;padding:18px;display:flex;align-items:center;justify-content:center;gap:10px;border-color:#FFB07C"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/></svg> REP TRIGGER</button>
-
-    <!-- Hold exercise timer (shown instead of REP TRIGGER for hold exercises) -->
-    <div id="hold-timer-wrap" style="display:none;text-align:center;padding:2px 0">
-      <p class="caveat" style="color:#A8E6CF;font-size:.9rem;margin-bottom:8px">hold steady — rep fires automatically ✦</p>
-      <div style="position:relative;width:88px;height:88px;margin:0 auto 4px">
-        <svg viewBox="0 0 88 88" width="88" height="88">
-          <circle cx="44" cy="44" r="37" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="7"/>
-          <circle id="hold-arc" cx="44" cy="44" r="37" fill="none" stroke="#A8E6CF"
-                  stroke-width="7" stroke-dasharray="0 232.5" stroke-linecap="round"
-                  style="transform:rotate(-90deg);transform-origin:44px 44px;transition:stroke-dasharray .9s linear"/>
-        </svg>
-        <div id="hold-countdown" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.1rem;font-weight:700;color:#fff;font-family:'Fredoka',sans-serif">10</div>
-      </div>
-    </div>
-
-    <div class="narrative" id="combat-narrative" style="max-height:90px;background:rgba(255,255,255,.04);color:#ccc;border-color:rgba(255,255,255,.1);font-size:.95rem;flex-shrink:0"></div>
-    <div class="btn-row" style="gap:8px;margin-top:auto">
-      <button class="btn btn-ghost" onclick="fleeCombat()" style="border-color:#333;color:#666;display:flex;align-items:center;justify-content:center;gap:6px;font-size:.9rem;padding:11px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Flee</button>
-      <button class="btn btn-ghost" onclick="exitToMenu()" style="border-color:#333;color:#666;display:flex;align-items:center;justify-content:center;gap:6px;font-size:.9rem;padding:11px"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Menu</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════
-     SCREEN 7 — VICTORY
-═══════════════════════════════════════════════════════════ -->
-<div id="screen-victory" class="screen">
-  <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 0">
-
-    <p style="font-size:.82rem;font-weight:700;letter-spacing:2px;color:#aaa;margin-bottom:2px">YOU DID IT</p>
-    <h1 id="victory-title" class="clr-orange" style="font-size:3rem;margin-bottom:2px">VICTORY!</h1>
-    <p class="caveat clr-orange" style="font-size:1.5rem;margin-bottom:16px">〰〰〰〰〰〰</p>
-
-    <div style="margin-bottom:10px"><svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#FFB07C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/><path d="M7 4H4a2 2 0 0 0-2 2v3a6 6 0 0 0 6 6 6 6 0 0 0 6-6V6a2 2 0 0 0-2-2h-3"/><path d="M13 4h-2v10"/><path d="M11 4H9"/></svg></div>
-    <p id="victory-sub" class="caveat" style="font-size:1.05rem;color:#888;margin-bottom:16px"></p>
-
-    <!-- XP card -->
-    <div class="card" style="width:100%;margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <h3 id="victory-char-label">Warrior · Lv 1</h3>
-        <span id="xp-pill" class="pill pill-mint" style="font-size:.72rem">+0 XP</span>
-      </div>
-      <div class="hp-track"><div class="hp-fill hp-xp" id="xp-bar" style="width:20%"></div></div>
-      <div style="display:flex;justify-content:space-between;margin-top:4px">
-        <span style="font-size:.7rem;color:#aaa" id="xp-label-cur">0 / 100</span>
-        <span style="font-size:.7rem;color:#FFB07C" id="xp-label-next">100 to Lv 2</span>
-      </div>
-    </div>
-
-    <!-- Battle report -->
-    <div class="card" style="width:100%;text-align:left;margin-bottom:12px">
-      <h3 style="margin-bottom:10px">Battle Report</h3>
-      <div id="battle-report"></div>
-    </div>
-
-    <!-- Loot -->
-    <div class="card" id="loot-card" style="display:none;width:100%;text-align:left;margin-bottom:12px">
-      <h3 style="margin-bottom:10px;display:flex;align-items:center;gap:6px"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg> Loot Found!</h3>
-      <div id="loot-list" style="display:flex;gap:10px;flex-wrap:wrap"></div>
-    </div>
-
-    <!-- Rep chart -->
-    <div class="card" id="rep-chart-card" style="display:none;width:100%;text-align:left;margin-bottom:12px">
-      <h3 style="margin-bottom:10px;display:flex;align-items:center;gap:6px"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Rep Chart</h3>
-      <div id="rep-chart" style="display:flex;align-items:flex-end;gap:3px;height:48px"></div>
-      <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">
-        <span style="font-size:.7rem;display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#A8E6CF;border:1.5px solid #1a1a1a;border-radius:2px;display:inline-block"></span>Perfect</span>
-        <span style="font-size:.7rem;display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#FFD8B1;border:1.5px solid #1a1a1a;border-radius:2px;display:inline-block"></span>Good</span>
-        <span style="font-size:.7rem;display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#FFB07C;border:1.5px solid #1a1a1a;border-radius:2px;display:inline-block"></span>Sloppy</span>
-        <span style="font-size:.7rem;display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#FF9AA2;border:1.5px solid #1a1a1a;border-radius:2px;display:inline-block"></span>Miss</span>
-      </div>
-    </div>
-
-    <!-- Level up -->
-    <div class="card card-peach" id="levelup-card" style="display:none;width:100%;text-align:center;margin-bottom:12px">
-      <p style="font-size:1.1rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> LEVEL UP!</p>
-      <p id="levelup-text" class="caveat" style="font-size:1rem;color:#555;margin-top:4px"></p>
-    </div>
-
-    <button class="btn btn-primary" onclick="showScreen('world')" style="width:100%;font-size:1.1rem;padding:18px">Continue →</button>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════
-     SCREEN 8 — DEFEAT
-═══════════════════════════════════════════════════════════ -->
-<div id="screen-defeat" class="screen" style="background:#1a1a1a;color:#FFF5E1">
-  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 0">
-    <p style="font-size:.82rem;font-weight:700;letter-spacing:2px;color:#FF9AA2;margin-bottom:2px">OUCH</p>
-    <h1 style="font-size:4.5rem;color:#FF9AA2;margin-bottom:20px">K.O.</h1>
-
-    <div class="card" style="width:100%;background:#FFF5E1;color:#1a1a1a;margin-bottom:14px;padding:20px">
-      <p style="font-size:.62rem;font-weight:700;color:#FF9AA2;letter-spacing:1px;margin-bottom:6px">DEFEATED BY</p>
-      <p id="defeat-enemy-name" class="caveat" style="font-size:1.5rem;font-weight:700;color:#1a1a1a;margin-bottom:4px">???</p>
-      <p id="defeat-room-name" style="font-size:.78rem;color:#888"></p>
-    </div>
-
-    <p id="defeat-flavor" class="caveat" style="font-size:1.1rem;color:#FFF5E1;margin-bottom:18px;opacity:.8"></p>
-
-    <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;justify-content:center">
-      <span class="pill" style="background:#333;color:#FFF5E1;border-color:#555;font-size:.75rem" id="defeat-reps-pill">Reps this run · 0</span>
-      <span class="pill" style="background:#333;color:#FFF5E1;border-color:#555;font-size:.75rem" id="defeat-xp-pill">+0 XP earned</span>
-    </div>
-
-    <div class="btn-row" style="width:100%">
-      <button class="btn" style="flex:1;background:#333;color:#FFF5E1;border-color:#555" onclick="showScreen('world')">Quit</button>
-      <button class="btn btn-primary" style="flex:1" onclick="retryFight()">Try Again →</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════
-     SCREEN 9 — BOSS FINALE
-═══════════════════════════════════════════════════════════ -->
-<div id="screen-finale" class="screen">
-  <div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 0">
-    <div style="margin-bottom:6px"><svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#FFB07C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg></div>
-    <p style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">CONQUERED</p>
-    <h2 id="finale-dungeon-name" style="font-size:1.6rem;margin-bottom:20px">The Dark Keep</h2>
-
-    <div class="narrative" id="finale-narrative" style="font-size:1rem;line-height:1.9;max-height:none;text-align:left;margin-bottom:20px;width:100%"></div>
-
-    <div class="card" style="width:100%;text-align:left;margin-bottom:16px">
-      <h3 style="margin-bottom:10px">Final Stats</h3>
-      <div id="finale-stats"></div>
-    </div>
-
-    <button class="btn btn-primary" onclick="startNewQuest()" style="width:100%;font-size:1.1rem;padding:18px;display:flex;align-items:center;justify-content:center;gap:8px">
+  <div>
+    <a href="/game" class="btn-hero">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>
-      Begin New Quest
-    </button>
+      Begin Your Quest
+    </a>
+    <a href="#how" class="btn-ghost">How it works ↓</a>
   </div>
-</div>
 
-<!-- ═══════════════════════════════════════════════════════════
-     OVERLAYS & PANELS
-═══════════════════════════════════════════════════════════ -->
-<!-- Journal overlay -->
-<div id="journal-panel" style="display:none;position:fixed;inset:0;background:#FFF5E1;z-index:150;flex-direction:column;padding:20px;overflow-y:auto">
-  <div class="top-bar-title" style="margin-bottom:20px">
-    <button class="back-btn" onclick="closeJournal()"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <h2>Journal</h2>
+  <div class="hero-pills">
+    <span class="hero-pill">
+      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Runs locally
+    </span>
+    <span class="hero-pill">
+      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      No cloud
+    </span>
+    <span class="hero-pill">
+      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.88 5.76a2 2 0 0 0 1.36 1.36L21 12l-5.76 1.88a2 2 0 0 0-1.36 1.36L12 21l-1.88-5.76a2 2 0 0 0-1.36-1.36L3 12l5.76-1.88a2 2 0 0 0 1.36-1.36L12 3z"/></svg>
+      Gemma 4B + 26B
+    </span>
+    <span class="hero-pill">
+      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="11" r="8"/><path d="M8 17.9A5 5 0 0 1 12 16a5 5 0 0 1 4 1.9"/><circle cx="9" cy="11" r="1" fill="currentColor"/><circle cx="15" cy="11" r="1" fill="currentColor"/><line x1="10" y1="17" x2="10" y2="21"/><line x1="14" y1="17" x2="14" y2="21"/></svg>
+      Boss fights
+    </span>
   </div>
-  <div id="journal-content"></div>
-</div>
+</section>
 
-<!-- Global loading overlay -->
-<div id="loading-overlay" style="display:none;position:fixed;inset:0;background:rgba(255,245,225,.94);z-index:200;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px">
-  <div class="spinner" style="margin-bottom:18px"></div>
-  <p id="loading-text" style="font-weight:700;font-size:1rem;margin-bottom:6px">Loading…</p>
-  <p class="caveat" style="color:#aaa;font-size:1rem">Gemma is narrating the encounter</p>
-</div>
+<div class="divider"></div>
 
-<!-- Next-enemy transition overlay -->
-<div id="next-enemy-overlay" style="display:none;position:fixed;inset:0;background:rgba(255,245,225,.94);z-index:50;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px">
-  <div style="font-size:3.5rem;margin-bottom:14px">⚔️</div>
-  <p id="next-enemy-title" style="font-size:1.3rem;font-weight:700;color:#FFB07C;margin-bottom:8px"></p>
-  <p id="next-enemy-sub" class="caveat" style="color:#888;font-size:1.1rem"></p>
-</div>
+<!-- ══════════════════════ HOW IT WORKS ══════════════════════ -->
+<section class="section reveal" id="how">
+  <p class="sec-eyebrow">the ritual</p>
+  <h2 class="sec-title">Three steps<br>to glory.</h2>
+  <p class="sec-sub">No gym membership. No app store. Just paper, your phone, and the will to not be embarrassed by a goblin.</p>
 
-<!-- Character stats overlay -->
-<div id="stats-overlay" onclick="closeStats()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:120;align-items:flex-end">
-  <div onclick="event.stopPropagation()" style="background:#FFF5E1;border-radius:24px 24px 0 0;border:2.5px solid #1a1a1a;border-bottom:none;padding:20px;width:100%;max-height:78vh;overflow-y:auto">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <h2 id="stats-title">Hero</h2>
-      <button onclick="closeStats()" style="background:#1a1a1a;color:#FFF5E1;border:none;border-radius:50%;width:30px;height:30px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num-wrap">
+        <span class="step-num">01</span>
+        <div class="step-icon-ring">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+        </div>
+      </div>
+      <div>
+        <h3>Doodle your dungeon</h3>
+        <p>Grab any paper. Draw rooms, label enemies with skulls, mark the boss with a crown, connect corridors however you want. It doesn't have to be pretty. That's kind of the point.</p>
+        <span class="step-tag" style="background:var(--peach)">Pen + paper only</span>
+      </div>
     </div>
-    <div id="stats-body"></div>
+
+    <div class="step">
+      <div class="step-num-wrap">
+        <span class="step-num">02</span>
+        <div class="step-icon-ring">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+      </div>
+      <div>
+        <h3>Summon the world</h3>
+        <p>Snap a photo. Gemma 4's vision model reads your sketch and generates a full dungeon — named rooms, lore, enemies with backstories, and a boss with a deep personal grudge.</p>
+        <span class="step-tag" style="background:var(--mint)">128K context · Remembers everything</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num-wrap">
+        <span class="step-num">03</span>
+        <div class="step-icon-ring">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+      </div>
+      <div>
+        <h3>Sweat through it</h3>
+        <p>Each monster demands reps. Point your camera, do your squats. AI watches your form — sloppy reps deal less damage, and enemies hit back. Perfect form? Critical hit.</p>
+        <span class="step-tag" style="background:var(--pink)">Real reps · Real damage</span>
+      </div>
+    </div>
   </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════ CLASSES ══════════════════════ -->
+<section class="section reveal">
+  <p class="sec-eyebrow">your hero</p>
+  <h2 class="sec-title">Pick a class.<br>Pick your pain.</h2>
+  <p class="sec-sub">Each class specialises in different exercises. Choose the suffering that suits you best.</p>
+
+  <div class="classes">
+    <div class="cls">
+      <div class="cls-thumb" style="background:#FFE8E8">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>
+      </div>
+      <div style="flex:1">
+        <div class="cls-name">Warrior</div>
+        <div class="cls-desc">Max HP · "My legs are weapons"</div>
+        <div class="cls-exercises">
+          <span class="ex-pill">Squats</span>
+          <span class="ex-pill">Push-ups</span>
+          <span class="ex-pill">Burpees</span>
+        </div>
+      </div>
+      <div style="background:var(--pink);border:2px solid var(--dark);border-radius:50px;padding:4px 12px;font-size:.65rem;font-weight:700;flex-shrink:0">HP ●●●●●</div>
+    </div>
+
+    <div class="cls">
+      <div class="cls-thumb" style="background:#E4F8F0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      </div>
+      <div style="flex:1">
+        <div class="cls-name">Ranger</div>
+        <div class="cls-desc">Max Agility · "I never stop moving"</div>
+        <div class="cls-exercises">
+          <span class="ex-pill">Jumping Jacks</span>
+          <span class="ex-pill">High Knees</span>
+          <span class="ex-pill">Lunges</span>
+        </div>
+      </div>
+      <div style="background:var(--mint);border:2px solid var(--dark);border-radius:50px;padding:4px 12px;font-size:.65rem;font-weight:700;flex-shrink:0">AGI ●●●●●</div>
+    </div>
+
+    <div class="cls">
+      <div class="cls-thumb" style="background:#FFF5E1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.88 5.76a2 2 0 0 0 1.36 1.36L21 12l-5.76 1.88a2 2 0 0 0-1.36 1.36L12 21l-1.88-5.76a2 2 0 0 0-1.36-1.36L3 12l5.76-1.88a2 2 0 0 0 1.36-1.36L12 3z"/></svg>
+      </div>
+      <div style="flex:1">
+        <div class="cls-name">Mage</div>
+        <div class="cls-desc">Max Endurance · "Core of steel"</div>
+        <div class="cls-exercises">
+          <span class="ex-pill">Plank Hold</span>
+          <span class="ex-pill">Mountain Climbers</span>
+        </div>
+      </div>
+      <div style="background:var(--orange);border:2px solid var(--dark);border-radius:50px;padding:4px 12px;font-size:.65rem;font-weight:700;flex-shrink:0">END ●●●●●</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════ WHY ══════════════════════ -->
+<section class="section reveal">
+  <p class="sec-eyebrow">why though</p>
+  <h2 class="sec-title">This is not<br>a normal RPG.</h2>
+  <p class="sec-sub">Other games let you sit on the couch. We actively prevent it.</p>
+
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-icon" style="background:var(--cream)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <h3>100% local. Zero cloud.</h3>
+      <p>Your workout video never leaves your device. Gemma runs on your machine via Ollama.</p>
+    </div>
+
+    <div class="why-card">
+      <div class="why-icon" style="background:var(--peach)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </div>
+      <h3>AI judges your form.</h3>
+      <p>Half-squat? Doesn't count. The model only rewards clean, full-range reps.</p>
+    </div>
+
+    <div class="why-card">
+      <div class="why-icon" style="background:var(--mint)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+      </div>
+      <h3>Your doodle. Your world.</h3>
+      <p>Every dungeon is generated from your unique sketch. No two runs are ever the same.</p>
+    </div>
+
+    <div class="why-card">
+      <div class="why-icon" style="background:var(--pink)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      </div>
+      <h3>DM remembers everything.</h3>
+      <p>128K context window. The AI narrator never forgets a room you cleared or a boss you slew.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ FINAL CTA ══════════════════════ -->
+<div class="final-cta reveal">
+  <span class="final-eyebrow">you've been warned.</span>
+  <h2>Your dungeon<br>awaits.</h2>
+  <p>Grab a pen. Draw some rooms. Then do squats until the boss is dead. It's just that simple. (It's not.)</p>
+  <a href="/game" class="btn-final">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>
+    Begin Quest
+  </a>
 </div>
 
-<!-- Settings panel -->
-<div id="settings-panel">
-  <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:6px">
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
-    Settings
-  </h3>
-
-  <!-- AI Backend -->
-  <p style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:8px">AI BACKEND</p>
-  <div style="display:flex;gap:8px;margin-bottom:12px">
-    <button id="btn-backend-google" onclick="selectBackend('google')"
-      class="size-chip" style="flex:1;padding:10px 6px;font-size:.82rem">
-      Google AI Studio
-    </button>
-    <button id="btn-backend-ollama" onclick="selectBackend('ollama')"
-      class="size-chip" style="flex:1;padding:10px 6px;font-size:.82rem">
-      Local (Ollama)
-    </button>
-  </div>
-
-  <!-- Google key section -->
-  <div id="google-key-section" style="display:none;margin-bottom:14px">
-    <p style="font-size:.75rem;color:#666;margin-bottom:8px">
-      Paste your free key from
-      <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#FFB07C;font-weight:700">aistudio.google.com</a>
-      — no Ollama needed.
-    </p>
-    <input class="input-field" id="google-key-input" type="password"
-      placeholder="AIzaSy..." style="margin-bottom:8px;font-family:monospace;font-size:.85rem">
-    <button class="btn btn-mint" id="verify-key-btn" onclick="verifyGoogleKey()" style="background:#A8E6CF;font-size:.88rem;padding:10px">
-      Verify key
-    </button>
-    <p id="key-status" style="font-size:.75rem;margin-top:6px;min-height:18px"></p>
-  </div>
-
-  <!-- Ollama section -->
-  <div id="ollama-section" style="margin-bottom:14px">
-    <p style="font-size:.75rem;color:#666;margin-bottom:8px">Requires Ollama running locally with gemma4:e4b pulled.</p>
-  </div>
-
-  <!-- Server URL -->
-  <p style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:8px">SERVER URL</p>
-  <p style="font-size:.75rem;color:#666;margin-bottom:8px">iPhone users: set this to your Mac's local IP.</p>
-  <input class="input-field" id="api-input" placeholder="e.g. https://192.168.1.42:8000" style="margin-bottom:12px">
-
-  <div class="btn-row">
-    <button class="btn btn-primary" onclick="saveSettings()">Save</button>
-    <button class="btn btn-ghost" onclick="toggleSettings()">Cancel</button>
-  </div>
-</div>
+<footer>
+  <p>Powered by <strong>Gemma 4B</strong> (vision · form scoring) + <strong>Gemma 26B</strong> (narrative) · Ollama · 100% local</p>
+</footer>
 
 <script>
-// ── State ──────────────────────────────────────────────────────────────────
-let API               = localStorage.getItem('bq_api') || (['localhost','127.0.0.1'].includes(location.hostname) ? 'http://localhost:8000' : '');
-let sessionId         = null;
-let selectedClass     = 'warrior';
-let selectedDifficulty = 'normal';
-let gameState         = null;
-let currentCombat     = null;
-let cameraStream      = null;
-let currentRoomId     = null;
-
-// ── AI backend ──────────────────────────────────────────────────────────────
-let googleApiKey = localStorage.getItem('bq_google_key') || '';
-
-// ── Hold exercise state ─────────────────────────────────────────────────────
-let isHoldMode       = false;
-let holdTimerInterval = null;
-let holdSecondsLeft  = 10;
-const HOLD_REP_SECONDS = 10;
-const HOLD_KEYWORDS    = ['plank', 'hold', 'wall sit', 'tree pose', 'bear crawl'];
-
-// ── Audio ──────────────────────────────────────────────────────────────────
-let audioCtx   = null;
-let droneNodes = null;
-
-// ── Motion detection ───────────────────────────────────────────────────────
-const MOTION_HIGH = 7;   // % pixels changed → user is moving
-const MOTION_LOW  = 3;   // % pixels changed → user has stopped
-let motionLoop        = null;
-let prevMotionData    = null;
-let recentMotionScore = 0;
-let motionAccumulator = 0;  // display-only ring level
-let motionPeak        = false; // true once user moved above MOTION_HIGH
-let stoppedFrames     = 0;    // consecutive low-motion frames after a peak
-let repCooldown       = false;
-
-function ac() {
-  try {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    return audioCtx;
-  } catch(_) { return null; }
-}
-
-function beep(freq, type, dur, vol, delay = 0) {
-  const c = ac(); if (!c) return;
-  const osc = c.createOscillator(), gain = c.createGain();
-  osc.connect(gain); gain.connect(c.destination);
-  osc.type = type; osc.frequency.value = freq;
-  const t = c.currentTime + delay;
-  gain.gain.setValueAtTime(vol, t);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
-  osc.start(t); osc.stop(t + dur + 0.01);
-}
-
-function playTick()    { beep(600, 'sine', 0.04, 0.25); }
-
-function playRepQuality(q) {
-  if      (q === 'perfect') { beep(1050, 'sine',     0.18, 0.30); }
-  else if (q === 'good')    { beep(740,  'sine',     0.14, 0.20); }
-  else if (q === 'sloppy')  { beep(200,  'sawtooth', 0.12, 0.15); }
-  else if (q === 'miss')    { beep(110,  'square',   0.10, 0.12); }
-}
-
-function playVictory() {
-  [261.63, 329.63, 392.00, 523.25].forEach((f, i) =>
-    beep(f, 'triangle', 0.35, 0.28, i * 0.16)
-  );
-}
-
-function playDefeat() {
-  beep(280, 'sawtooth', 0.30, 0.20, 0.00);
-  beep(140, 'sawtooth', 0.45, 0.18, 0.32);
-}
-
-function playEnemyAppear() {
-  beep(80,  'sawtooth', 0.18, 0.22, 0.00);
-  beep(420, 'sine',     0.22, 0.20, 0.18);
-}
-
-function startDrone() {
-  if (droneNodes) return;
-  const c = ac(); if (!c) return;
-  const gain = c.createGain();
-  gain.gain.setValueAtTime(0, c.currentTime);
-  gain.gain.linearRampToValueAtTime(0.032, c.currentTime + 2.5);
-  gain.connect(c.destination);
-  const o1 = c.createOscillator(); o1.type = 'sine'; o1.frequency.value = 55;   o1.connect(gain); o1.start();
-  const o2 = c.createOscillator(); o2.type = 'sine'; o2.frequency.value = 57.5; o2.connect(gain); o2.start();
-  droneNodes = { o1, o2, gain };
-}
-
-function stopDrone() {
-  if (!droneNodes) return;
-  const c = ac();
-  const { o1, o2, gain } = droneNodes;
-  droneNodes = null;
-  if (c) {
-    gain.gain.setValueAtTime(0.032, c.currentTime);
-    gain.gain.linearRampToValueAtTime(0, c.currentTime + 0.6);
-  }
-  setTimeout(() => { try { o1.stop(); o2.stop(); } catch(_) {} }, 700);
-}
-
-// ── Camera permission ──────────────────────────────────────────────────────
-async function requestCameraPermission() {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    stream.getTracks().forEach(t => t.stop());
-  } catch(_) {}
-  showScreen('sketch');
-}
-
-// ── Rep metronome ──────────────────────────────────────────────────────────
-let metronomeInterval = null;
-function startMetronome() {
-  if (metronomeInterval) return;
-  metronomeInterval = setInterval(() => {
-    if (!isHoldMode && currentCombat && currentCombat.active) playTick();
-  }, 2000);
-}
-function stopMetronome() {
-  if (metronomeInterval) { clearInterval(metronomeInterval); metronomeInterval = null; }
-}
-
-// ── World gen cycling messages ─────────────────────────────────────────────
-const GEN_MSGS = [
-  'Reading your sketch...', 'Naming the dungeon...', 'Populating the rooms...',
-  'Writing enemy lore...', 'Placing the boss...', 'Weaving the narrative...',
-  'Almost ready...',
+// ── Scan beam room lighting ────────────────────────────────────────────────
+// The beam takes 3.2s to sweep. Light up rooms as beam passes over them.
+const CYCLE = 3200;
+const ROOMS = [
+  { el: document.getElementById('r1'), delay: 300,  fill: '#FFE0C0' },
+  { el: document.getElementById('r2'), delay: 1100, fill: '#FFE0E8' },
+  { el: document.getElementById('r3'), delay: 1900, fill: '#FFD8B1' },
 ];
-let genMsgInterval = null;
-function startGenMessages(elId) {
-  const el = document.getElementById(elId);
-  if (!el) return;
-  let i = 0; el.textContent = GEN_MSGS[0];
-  genMsgInterval = setInterval(() => { i = (i+1)%GEN_MSGS.length; el.textContent = GEN_MSGS[i]; }, 3500);
-}
-function stopGenMessages() {
-  if (genMsgInterval) { clearInterval(genMsgInterval); genMsgInterval = null; }
-}
 
-// ── Character stats overlay ────────────────────────────────────────────────
-function openStats() {
-  if (!gameState || !gameState.character) return;
-  const c = gameState.character;
-  const cls = c.class ? c.class.charAt(0).toUpperCase()+c.class.slice(1) : 'Hero';
-  document.getElementById('stats-title').textContent = `${c.name} — ${cls}`;
-  const xpPct = Math.min(100, Math.round(c.xp / c.xp_next * 100));
-  const inv = (c.inventory || []);
-  const invBonus = Math.min(Math.round(inv.reduce((s,i)=>s+(i.pct||0),0)*100), 50);
-  document.getElementById('stats-body').innerHTML =
-    `<div class="card" style="margin-bottom:10px">
-       <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-         <span style="font-size:.8rem;font-weight:700">Level ${c.level}</span>
-         <span style="font-size:.8rem;color:#FFB07C">${c.xp} / ${c.xp_next} XP</span>
-       </div>
-       <div class="hp-track"><div class="hp-fill hp-xp" style="width:${xpPct}%"></div></div>
-     </div>
-     <div class="card" style="margin-bottom:10px">
-       <p style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:8px">VITALS</p>
-       <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-         <span style="font-size:.85rem">HP</span>
-         <span style="font-size:.85rem;font-weight:700;color:#FF9AA2">${c.hp} / ${c.max_hp}</span>
-       </div>
-       <div class="hp-track"><div class="hp-fill hp-player" style="width:${Math.round(c.hp/c.max_hp*100)}%"></div></div>
-     </div>
-     <div class="card" style="margin-bottom:10px">
-       <p style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:8px">STATS</p>
-       ${Object.entries(c.stats||{}).map(([k,v])=>`
-         <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-           <span style="font-size:.82rem;text-transform:capitalize">${k}</span>
-           <span style="font-size:.82rem;font-weight:700">${v}</span>
-         </div>`).join('')}
-     </div>
-     ${inv.length ? `<div class="card">
-       <p style="font-size:.68rem;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:8px">INVENTORY${invBonus?` · <span style="color:#FFB07C">+${invBonus}% dmg</span>`:''}</p>
-       ${inv.map(i=>`<div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:.82rem">
-         <span style="font-weight:600">${esc(i.name)}</span><span style="color:#aaa">${esc(i.bonus)}</span></div>`).join('')}
-     </div>` : ''}
-     <p style="font-size:.75rem;color:#aaa;text-align:center;margin-top:10px">${c.defeated_rooms.length} rooms cleared</p>`;
-  const overlay = document.getElementById('stats-overlay');
-  overlay.style.display = 'flex';
-}
-function closeStats() {
-  document.getElementById('stats-overlay').style.display = 'none';
-}
-
-// ── First-run detection ────────────────────────────────────────────────────
-function checkFirstRun() {
-  const hasBackend = !!googleApiKey || !!localStorage.getItem('bq_session');
-  document.getElementById('first-run-banner').style.display = hasBackend ? 'none' : 'block';
-}
-
-// ── Difficulty ─────────────────────────────────────────────────────────────
-function selectDifficulty(el, diff) {
-  document.querySelectorAll('#difficulty-row .size-chip').forEach(b => b.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedDifficulty = diff;
-}
-
-// ── Hold exercise helpers ───────────────────────────────────────────────────
-function isHoldExercise(exercise) {
-  const e = (exercise || '').toLowerCase();
-  return HOLD_KEYWORDS.some(k => e.includes(k));
-}
-
-function setupCombatExerciseUI(exercise) {
-  stopHoldTimer();
-  isHoldMode = isHoldExercise(exercise);
-  const attackBtn = document.getElementById('attack-btn');
-  const holdWrap  = document.getElementById('hold-timer-wrap');
-  if (isHoldMode) {
-    attackBtn.style.display = 'none';
-    holdWrap.style.display  = 'block';
-    startHoldTimer();
-  } else {
-    attackBtn.style.display = 'flex';
-    holdWrap.style.display  = 'none';
-  }
-}
-
-function startHoldTimer() {
-  holdSecondsLeft = HOLD_REP_SECONDS;
-  updateHoldTimerArc();
-  if (holdTimerInterval) clearInterval(holdTimerInterval);
-  holdTimerInterval = setInterval(() => {
-    holdSecondsLeft--;
-    updateHoldTimerArc();
-    if (holdSecondsLeft <= 0) {
-      holdSecondsLeft = HOLD_REP_SECONDS;
-      const onCombat = document.getElementById('screen-combat').classList.contains('active');
-      if (!repCooldown && onCombat && currentCombat && currentCombat.active) captureRep();
-    }
-  }, 1000);
-}
-
-function stopHoldTimer() {
-  if (holdTimerInterval) { clearInterval(holdTimerInterval); holdTimerInterval = null; }
-  isHoldMode = false;
-}
-
-function updateHoldTimerArc() {
-  const arc   = document.getElementById('hold-arc');
-  const label = document.getElementById('hold-countdown');
-  if (!arc || !label) return;
-  const circ    = 232.5;  // 2π × 37
-  const elapsed = HOLD_REP_SECONDS - holdSecondsLeft;
-  arc.setAttribute('stroke-dasharray', `${((elapsed / HOLD_REP_SECONDS) * circ).toFixed(1)} ${circ}`);
-  label.textContent = holdSecondsLeft;
-}
-
-// ── Safe room rest ──────────────────────────────────────────────────────────
-async function restInSafeRoom(roomId) {
-  showLoading('Resting…');
-  try {
-    const r = await fetch(`${API}/api/safe-room`, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ session_id: sessionId, room_id: roomId }),
-    });
-    if (!r.ok) throw new Error(await r.text());
-    const data = await r.json();
-    hideLoading();
-    if (gameState) { gameState.character = data.character; updateHeader(); }
-    if (data.narration) document.getElementById('world-narrative').textContent = data.narration;
-    if (gameState && gameState.world) {
-      const cleared = data.character.defeated_rooms || [];
-      renderRooms(gameState.world.rooms, gameState.world.boss_room, cleared, gameState.world.entrance_room);
-      renderWorldMap(gameState.world, cleared, roomId);
-      updateInventory(data.character.inventory || []);
-    }
-  } catch(e) {
-    hideLoading();
-    alert('Could not rest: ' + e.message);
-  }
-}
-
-// ── HTML escape for AI-generated content ──────────────────────────────────
-function esc(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-// ── Vector icon system ─────────────────────────────────────────────────────
-const ICONS = {
-  'sword':      '<polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/>',
-  'target':     '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
-  'sparkles':   '<path d="M12 3l1.88 5.76a2 2 0 0 0 1.36 1.36L21 12l-5.76 1.88a2 2 0 0 0-1.36 1.36L12 21l-1.88-5.76a2 2 0 0 0-1.36-1.36L3 12l5.76-1.88a2 2 0 0 0 1.36-1.36L12 3z"/>',
-  'crown':      '<path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/>',
-  'skull':      '<circle cx="12" cy="11" r="8"/><path d="M8 17.9A5 5 0 0 1 12 16a5 5 0 0 1 4 1.9"/><circle cx="9" cy="11" r="1" fill="currentColor"/><circle cx="15" cy="11" r="1" fill="currentColor"/><line x1="10" y1="17" x2="10" y2="21"/><line x1="14" y1="17" x2="14" y2="21"/>',
-  'ghost':      '<path d="M9 10h.01M15 10h.01M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"/>',
-  'flame':      '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
-  'bug':        '<rect x="8" y="6" width="8" height="14" rx="4"/><path d="M19 7l-3 2M5 7l3 2M19 12h-3M8 12H5M19 17l-3-2M5 17l3-2"/>',
-  'wand-2':     '<path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72z"/><path d="m14 7 3 3"/>',
-  'droplets':   '<path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/>',
-  'paw':        '<circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="4" cy="8" r="2"/><path d="M9 10c.6 1.1 1 2.3 1 3.5C10 16 8 18 8 18s-2-2-2-4.5c0-1.2.4-2.4 1-3.5"/><path d="M12.5 10c.6 1.1 1 2.3 1 3.5 0 2.5-2 4.5-2 4.5s-2-2-2-4.5c0-1.2.4-2.4 1-3.5"/>',
-  'zap':        '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
-  'gem':        '<polygon points="6 3 18 3 22 9 12 22 2 9 6 3"/><polyline points="2 9 12 14 22 9"/><line x1="12" y1="22" x2="12" y2="14"/>',
-  'check':      '<polyline points="20 6 9 17 4 12"/>',
-  'check-circle':'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
-  'x-circle':   '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
-  'alert':      '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
-  'star':       '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
-  'trophy':     '<line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/><path d="M7 4H4a2 2 0 0 0-2 2v3a6 6 0 0 0 6 6 6 6 0 0 0 6-6V6a2 2 0 0 0-2-2h-3"/><path d="M13 4h-2v10"/><path d="M11 4H9"/>',
-  'heart':      '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
-  'search':     '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
-  'door':       '<path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><line x1="13" y1="4" x2="13" y2="20"/>',
-};
-
-function icon(name, size = 20, color = 'currentColor', sw = 2) {
-  const p = ICONS[name] || ICONS['skull'];
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;flex-shrink:0">${p}</svg>`;
-}
-
-// ── Class info ─────────────────────────────────────────────────────────────
-const CLASS_META = {
-  warrior: { iconName:'sword',    label:'Warrior', quote:'"Heavy hits via squats & push-ups."', previewBg:'#FF9AA2' },
-  ranger:  { iconName:'target',   label:'Ranger',  quote:'"Quick & nimble — cardio is power."',  previewBg:'#A8E6CF' },
-  mage:    { iconName:'sparkles', label:'Mage',    quote:'"Master of holds and long combos."',   previewBg:'#FFD8B1' },
-};
-
-// ── Loading overlay ────────────────────────────────────────────────────────
-function showLoading(text) {
-  document.getElementById('loading-text').textContent = text || 'Loading…';
-  document.getElementById('loading-overlay').style.display = 'flex';
-}
-function hideLoading() {
-  document.getElementById('loading-overlay').style.display = 'none';
-}
-
-// ── Screen management ──────────────────────────────────────────────────────
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + name).classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-// ── Settings ───────────────────────────────────────────────────────────────
-function toggleSettings() {
-  const p = document.getElementById('settings-panel');
-  const open = p.style.display === 'block';
-  p.style.display = open ? 'none' : 'block';
-  if (!open) {
-    document.getElementById('api-input').value = API;
-    document.getElementById('google-key-input').value = googleApiKey;
-    // Reflect current backend
-    const hasKey = !!googleApiKey;
-    selectBackend(hasKey ? 'google' : 'ollama', true);
-  }
-}
-
-function selectBackend(type, silent) {
-  const gSection = document.getElementById('google-key-section');
-  const oSection = document.getElementById('ollama-section');
-  const gBtn     = document.getElementById('btn-backend-google');
-  const oBtn     = document.getElementById('btn-backend-ollama');
-  if (type === 'google') {
-    gSection.style.display = 'block';
-    oSection.style.display = 'none';
-    gBtn.classList.add('selected');
-    oBtn.classList.remove('selected');
-  } else {
-    gSection.style.display = 'none';
-    oSection.style.display = 'block';
-    oBtn.classList.add('selected');
-    gBtn.classList.remove('selected');
-  }
-}
-
-async function verifyGoogleKey() {
-  const key = document.getElementById('google-key-input').value.trim();
-  const status = document.getElementById('key-status');
-  const btn    = document.getElementById('verify-key-btn');
-  if (!key) { status.style.color='#FF9AA2'; status.textContent = 'Paste your key first.'; return; }
-  btn.textContent = 'Checking...'; btn.disabled = true;
-  try {
-    const r = await fetch(`${API}/api/verify-google-key`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ key }),
-    });
-    if (!r.ok) throw new Error((await r.json()).detail || 'Invalid key');
-    const data = await r.json();
-    status.style.color = '#2ecc71';
-    status.textContent = `Valid — using ${data.model}`;
-  } catch(e) {
-    status.style.color = '#FF9AA2';
-    status.textContent = e.message || 'Key invalid or unreachable';
-  } finally {
-    btn.textContent = 'Verify key'; btn.disabled = false;
-  }
-}
-
-function saveSettings() {
-  const url = document.getElementById('api-input').value.trim().replace(/\/$/, '');
-  if (url) { API = url; localStorage.setItem('bq_api', url); }
-
-  const isGoogle = document.getElementById('btn-backend-google').classList.contains('selected');
-  if (isGoogle) {
-    const key = document.getElementById('google-key-input').value.trim();
-    googleApiKey = key;
-    localStorage.setItem('bq_google_key', key);
-  } else {
-    googleApiKey = '';
-    localStorage.removeItem('bq_google_key');
-  }
-  toggleSettings();
-}
-
-// ── Generate-world options ─────────────────────────────────────────────────
-const THEMES = [
-  'Ancient Ruins','Dark Castle','Volcanic Lair',
-  'Frozen Fortress','Haunted Forest','Desert Temple','Underground Cave',
-];
-const SIZES = [
-  { label:'Quick',    sub:'3 rooms', rooms:3 },
-  { label:'Standard', sub:'5 rooms', rooms:5 },
-  { label:'Epic',     sub:'7 rooms', rooms:7 },
-];
-let selectedTheme    = THEMES[0];
-let selectedRoomCount = 5;
-
-function showDoodleMode() {
-  document.getElementById('doodle-section').style.display    = 'block';
-  document.getElementById('generate-section').style.display  = 'none';
-  document.getElementById('mode-doodle').classList.add('active');
-  document.getElementById('mode-generate').classList.remove('active');
-}
-
-function showGenerateMode() {
-  document.getElementById('doodle-section').style.display    = 'none';
-  document.getElementById('generate-section').style.display  = 'block';
-  document.getElementById('mode-generate').classList.add('active');
-  document.getElementById('mode-doodle').classList.remove('active');
-  renderGenerateOptions();
-}
-
-function renderGenerateOptions() {
-  const grid = document.getElementById('theme-grid');
-  grid.innerHTML = THEMES.map(t =>
-    `<button class="theme-chip${t===selectedTheme?' selected':''}" onclick="selectTheme(this,'${t}')">${t}</button>`
-  ).join('');
-
-  const row = document.getElementById('size-row');
-  row.innerHTML = SIZES.map(s =>
-    `<button class="size-chip${s.rooms===selectedRoomCount?' selected':''}" onclick="selectSize(this,${s.rooms})">
-      ${s.label}<br><span style="font-size:.7rem;opacity:.6">${s.sub}</span>
-    </button>`
-  ).join('');
-}
-
-function selectTheme(el, theme) {
-  document.querySelectorAll('.theme-chip').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedTheme = theme;
-}
-
-function selectSize(el, rooms) {
-  document.querySelectorAll('.size-chip').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedRoomCount = rooms;
-}
-
-async function generateFromOptions() {
-  const btn     = document.getElementById('gen-btn');
-  const loading = document.getElementById('gen-loading');
-  document.getElementById('gen-error').style.display    = 'none';
-  btn.style.display     = 'none';
-  loading.style.display = 'block';
-  startGenMessages('gen-loading-text');
-
-  try {
-    const r = await fetch(`${API}/api/generate-world`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ session_id:sessionId, theme:selectedTheme, room_count:selectedRoomCount }),
-    });
-    if (!r.ok) throw new Error(await r.text());
-    const data = await r.json();
-
-    stopGenMessages();
-    loading.style.display = 'none';
-    btn.style.display     = 'block';
-
-    if (gameState) gameState.world = data.world;
-
-    document.getElementById('dungeon-title').textContent   = data.world.dungeon_name;
-    document.getElementById('dungeon-lore').textContent    = data.world.dungeon_lore;
-    document.getElementById('world-narrative').textContent = data.intro_narrative || '';
-    renderRooms(data.world.rooms, data.world.boss_room, [], data.world.entrance_room);
-    renderWorldMap(data.world, [], data.world.entrance_room);
-    updateInventory([]);
-    updateHeader();
-    showScreen('world');
-  } catch(e) {
-    stopGenMessages();
-    loading.style.display = 'none';
-    btn.style.display     = 'block';
-    document.getElementById('gen-error-msg').textContent = e.message || 'Unknown error';
-    document.getElementById('gen-error').style.display   = 'block';
-  }
-}
-
-// ── Journal ────────────────────────────────────────────────────────────────
-function openJournal() {
-  const panel   = document.getElementById('journal-panel');
-  const content = document.getElementById('journal-content');
-  const history = gameState?.narrative_history;
-
-  if (!history || history.length === 0) {
-    content.innerHTML = `
-      <div style="text-align:center;padding:60px 0">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        <p class="caveat" style="font-size:1.2rem;color:#bbb">No adventures yet.<br>Begin a quest to fill your journal.</p>
-      </div>`;
-  } else {
-    const typeLabel = { intro:'Arrival', encounter:'Encounter', combat:'Battle', victory:'Victory' };
-    content.innerHTML = history.map(e => `
-      <div class="card" style="margin-bottom:10px">
-        <p style="font-size:.62rem;font-weight:700;color:#FFB07C;letter-spacing:1px;margin-bottom:6px">${(typeLabel[e.type] || e.type).toUpperCase()}</p>
-        <p class="caveat" style="font-size:1.05rem;line-height:1.65;color:#333">${e.text}</p>
-      </div>`).join('');
-  }
-
-  panel.style.display = 'flex';
-  panel.scrollTop = 0;
-}
-
-function closeJournal() {
-  document.getElementById('journal-panel').style.display = 'none';
-}
-
-// ── Character selection ────────────────────────────────────────────────────
-function selectClass(el, cls) {
-  document.querySelectorAll('.class-card').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedClass = cls;
-  const m = CLASS_META[cls];
-  document.getElementById('class-preview-card').style.background = m.previewBg;
-  document.getElementById('preview-badge').textContent  = cls.toUpperCase();
-  document.getElementById('preview-emoji').innerHTML    = icon(m.iconName, 52, '#1a1a1a', 1.8);
-  document.getElementById('preview-name').textContent   = m.label;
-  document.getElementById('preview-quote').textContent  = m.quote;
-  document.getElementById('confirm-btn').textContent    = `Confirm ${m.label} →`;
-}
-
-// ── New game ───────────────────────────────────────────────────────────────
-async function createGame() {
-  const name = document.getElementById('player-name').value.trim();
-  if (!name) { alert("Enter your hero's name!"); return; }
-  try {
-    const r = await fetch(`${API}/api/new-game`, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ player_name: name, player_class: selectedClass, difficulty: selectedDifficulty, google_api_key: googleApiKey })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    const data = await r.json();
-    sessionId = data.session_id;
-    gameState = data;
-    localStorage.setItem('bq_session', sessionId);
-    showScreen('sketch');
-  } catch(e) {
-    alert('Cannot reach server.\n\nMake sure the backend is running, then check Settings if using iPhone.\n\n' + e.message);
-  }
-}
-
-// ── Sketch → world ─────────────────────────────────────────────────────────
-function previewSketch(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('sketch-preview').src = e.target.result;
-    document.getElementById('sketch-wrap').style.display = 'block';
-    document.getElementById('summon-btn').style.display  = 'block';
-  };
-  reader.readAsDataURL(file);
-}
-
-async function generateWorld() {
-  const preview = document.getElementById('sketch-preview');
-  if (!preview.src || preview.src === window.location.href) { alert('Photograph your sketch first!'); return; }
-
-  document.getElementById('summon-btn').style.display     = 'none';
-  document.getElementById('sketch-error').style.display   = 'none';
-  document.getElementById('sketch-loading').style.display  = 'block';
-  document.getElementById('scan-line').classList.add('active');
-  startGenMessages('sketch-loading-text');
-
-  const b64 = preview.src.split(',')[1];
-  try {
-    const r = await fetch(`${API}/api/sketch`, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ session_id: sessionId, image_b64: b64 })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    const data = await r.json();
-
-    stopGenMessages();
-    document.getElementById('sketch-loading').style.display = 'none';
-    document.getElementById('scan-line').classList.remove('active');
-
-    document.getElementById('scan-dungeon-name').textContent = data.world.dungeon_name;
-    document.getElementById('scan-room-count').textContent   = `${data.world.rooms.length} rooms discovered`;
-    document.getElementById('scan-reveal').style.display = 'block';
-    await new Promise(res => setTimeout(res, 1800));
-    document.getElementById('scan-reveal').style.display = 'none';
-
-    if (gameState) gameState.world = data.world;
-
-    document.getElementById('dungeon-title').textContent  = data.world.dungeon_name;
-    document.getElementById('dungeon-lore').textContent   = data.world.dungeon_lore;
-    document.getElementById('world-narrative').textContent = data.intro_narrative || '';
-
-    renderRooms(data.world.rooms, data.world.boss_room, [], data.world.entrance_room);
-    renderWorldMap(data.world, [], data.world.entrance_room);
-    updateInventory([]);
-    updateHeader();
-    showScreen('world');
-  } catch(e) {
-    stopGenMessages();
-    document.getElementById('sketch-loading').style.display = 'none';
-    document.getElementById('scan-line').classList.remove('active');
-    document.getElementById('summon-btn').style.display     = 'block';
-    document.getElementById('sketch-error-msg').textContent = e.message || 'Unknown error';
-    document.getElementById('sketch-error').style.display   = 'block';
-  }
-}
-
-// ── Render rooms ───────────────────────────────────────────────────────────
-function renderRooms(rooms, bossRoomId, clearedRooms, entranceId) {
-  const list = document.getElementById('rooms-list');
-  list.innerHTML = '';
-  rooms.forEach(room => {
-    const isBoss     = room.id === bossRoomId || room.is_boss;
-    const isCleared  = clearedRooms.includes(room.id);
-    const hasEnemies = room.enemies && room.enemies.length > 0;
-
-    // Accessible if entrance, already cleared, or connected to cleared/entrance room.
-    const seeds = clearedRooms.length > 0 ? clearedRooms : (entranceId ? [entranceId] : []);
-    const isAccessible = !entranceId || room.id === entranceId || isCleared
-      || (room.connections || []).some(c => seeds.includes(c));
-    const isLocked   = !isAccessible;
-    const isSafeRest = !hasEnemies && !isCleared && isAccessible;
-
-    const div = document.createElement('div');
-    div.className = 'room-card'
-      + (isBoss     ? ' boss'      : '')
-      + (isCleared  ? ' cleared'   : '')
-      + (isLocked   ? ' locked'    : '')
-      + (isSafeRest ? ' safe-rest' : '');
-
-    const enemyHtml = hasEnemies
-      ? room.enemies.map(e =>
-          `<p style="font-size:.75rem;color:#FF9AA2;margin-top:4px">` +
-          `⚔️ ${esc(e.name)} · ${esc(e.hp)} HP · ${esc(e.reps_required)} ${esc(e.exercise)}</p>`
-        ).join('')
-      : isLocked   ? `<p style="font-size:.72rem;color:#bbb;margin-top:4px;display:flex;align-items:center;gap:4px">${icon('x-circle',12,'#ccc')} Clear a connected room first</p>`
-      : isCleared  ? `<p style="font-size:.72rem;color:#A8E6CF;margin-top:4px">✓ Rested here</p>`
-                   : `<p style="font-size:.72rem;color:#A8E6CF;margin-top:4px;display:flex;align-items:center;gap:4px">${icon('star',12,'#A8E6CF')} Safe room · Tap to rest (+30% HP)</p>`;
-
-    const leadIcon   = isLocked  ? icon('x-circle',16,'#ccc')
-      : isCleared    ? icon('check',16,'#A8E6CF')
-      : isBoss       ? icon('crown',16,'#FF9AA2')
-                     : icon('door',16,'#aaa');
-
-    const cornerIcon = isCleared  ? icon('check-circle',22,'#A8E6CF')
-      : isBoss       ? icon('crown',22,'#FF9AA2')
-      : isLocked     ? icon('x-circle',22,'#ccc')
-      : hasEnemies   ? icon('sword',22,'#FF9AA2')
-                     : icon('star',22,'#A8E6CF');
-
-    const nameColor = isBoss ? '#FF9AA2' : isLocked ? '#bbb' : '#1a1a1a';
-
-    div.innerHTML =
-      `<div style="display:flex;justify-content:space-between;align-items:flex-start">` +
-        `<div style="flex:1;min-width:0">` +
-          `<h3 style="color:${nameColor};display:flex;align-items:center;gap:6px">${leadIcon} ${esc(room.name)}</h3>` +
-          `<p style="font-size:.78rem;color:#888;margin-top:4px;line-height:1.5">${esc(room.description)}</p>` +
-          enemyHtml +
-        `</div>` +
-        `<span style="margin-left:10px;flex-shrink:0">${cornerIcon}</span>` +
-      `</div>`;
-
-    if (!isLocked && !isCleared) {
-      if (hasEnemies) div.onclick = () => enterRoom(room);
-      else            div.onclick = () => restInSafeRoom(room.id);
-    }
-    list.appendChild(div);
+function runLightCycle() {
+  ROOMS.forEach(r => { if (r.el) r.el.setAttribute('fill', 'transparent'); });
+  ROOMS.forEach(({ el, delay, fill }) => {
+    if (!el) return;
+    setTimeout(() => {
+      el.setAttribute('fill', fill);
+      el.style.transition = 'fill .4s ease';
+    }, delay);
   });
 }
+runLightCycle();
+setInterval(runLightCycle, CYCLE);
 
-// ── Enemy emoji helper ─────────────────────────────────────────────────────
-function getEnemyIcon(name, size = 80) {
-  if (!name) return icon('skull', size, '#1a1a1a', 1.5);
-  const n = name.toLowerCase();
-  if (n.includes('dragon') || n.includes('wyrm'))                                    return icon('flame',  size, '#FF9AA2', 1.5);
-  if (n.includes('skeleton') || n.includes('skull') || n.includes('bone') || n.includes('undead')) return icon('skull', size, '#1a1a1a', 1.5);
-  if (n.includes('ghost') || n.includes('wraith') || n.includes('specter'))          return icon('ghost',  size, '#aaa',    1.5);
-  if (n.includes('goblin') || n.includes('orc') || n.includes('troll'))              return icon('zap',    size, '#FF9AA2', 1.5);
-  if (n.includes('witch') || n.includes('mage') || n.includes('wizard'))             return icon('wand-2', size, '#A8E6CF', 1.5);
-  if (n.includes('spider') || n.includes('scorpion'))                                return icon('bug',    size, '#1a1a1a', 1.5);
-  if (n.includes('slime') || n.includes('blob') || n.includes('ooze'))               return icon('droplets',size,'#A8E6CF', 1.5);
-  if (n.includes('wolf') || n.includes('beast') || n.includes('bear'))               return icon('paw',    size, '#FFB07C', 1.5);
-  if (n.includes('king') || n.includes('lord') || n.includes('tyrant'))              return icon('crown',  size, '#FFB07C', 1.5);
-  if (n.includes('demon') || n.includes('devil'))                                    return icon('flame',  size, '#FF9AA2', 1.5);
-  return icon('skull', size, '#1a1a1a', 1.5);
-}
-
-// ── Enter room → start combat ──────────────────────────────────────────────
-async function enterRoom(room) {
-  showLoading(`Entering ${room.name}…`);
-  try {
-    const r = await fetch(`${API}/api/start-combat`, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ session_id: sessionId, room_id: room.id })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    const data = await r.json();
-
-    currentCombat = data.combat;
-    currentRoomId = room.id;
-
-    document.getElementById('enemy-name').textContent    = data.combat.enemy.name;
-    document.getElementById('enemy-lore').textContent    = data.combat.enemy.lore || '';
-    document.getElementById('enemy-hp-text').textContent = `HP ${data.combat.enemy.hp}/${data.combat.enemy.hp}`;
-    document.getElementById('enemy-hp-bar').style.width  = '100%';
-    document.getElementById('enemy-emoji').innerHTML     = getEnemyIcon(data.combat.enemy.name);
-    document.getElementById('boss-badge-el').style.display = (room.is_boss || room.id === (gameState?.world?.boss_room)) ? 'inline-block' : 'none';
-    document.getElementById('exercise-display').textContent = data.combat.exercise;
-    document.getElementById('rep-count').textContent     = '0';
-    document.getElementById('reps-needed').textContent   = data.combat.reps_required;
-    document.getElementById('rep-overlay').textContent   = `0 / ${data.combat.reps_required}`;
-    document.getElementById('quality-overlay').textContent = '';
-    document.getElementById('quality-overlay').className  = 'quality-pill';
-    document.getElementById('form-feedback').textContent = '';
-    document.getElementById('combat-narrative').textContent = data.opening_narration || '';
-
-    const char = gameState?.character;
-    if (char) {
-      const cls = char.class ? char.class.toUpperCase() : 'HERO';
-      document.getElementById('player-hp-label').textContent = `${cls} · YOU`;
-      document.getElementById('player-hp-val').textContent   = `${char.hp}/${char.max_hp}`;
-      document.getElementById('player-hp-bar').style.width   = `${Math.round(char.hp/char.max_hp*100)}%`;
-    }
-
-    const counter = document.getElementById('enemy-counter');
-    const total   = data.combat.enemies_total || 1;
-    if (total > 1) { counter.textContent = `ENEMY 1 / ${total}`; counter.style.display = 'inline-block'; }
-    else { counter.style.display = 'none'; }
-
-    hideLoading();
-    await startCamera();
-    startDrone();
-    startMetronome();
-    setupCombatExerciseUI(data.combat.exercise);
-    showScreen('combat');
-  } catch(e) {
-    hideLoading();
-    alert('Could not start combat: ' + e.message);
-  }
-}
-
-// ── Camera ─────────────────────────────────────────────────────────────────
-async function startCamera() {
-  try {
-    if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
-    cameraStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: {ideal:720}, height: {ideal:1280} }
-    });
-    document.getElementById('camera-video').srcObject = cameraStream;
-    startMotionLoop();
-  } catch(e) {
-    alert('Camera access required to play.\nPlease allow camera access and reload.');
-  }
-}
-
-function stopCamera() {
-  stopMotionLoop();
-  if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
-}
-
-// ── Motion detection loop ──────────────────────────────────────────────────
-function startMotionLoop() {
-  const mc = document.getElementById('motion-canvas');
-  mc.width = 80; mc.height = 60;
-  prevMotionData    = null;
-  recentMotionScore = 0;
-  motionAccumulator = 0;
-  motionPeak        = false;
-  stoppedFrames     = 0;
-  repCooldown       = false;
-  if (motionLoop) clearInterval(motionLoop);
-  motionLoop = setInterval(computeMotion, 150);
-}
-
-function stopMotionLoop() {
-  if (motionLoop) { clearInterval(motionLoop); motionLoop = null; }
-  prevMotionData = null; recentMotionScore = 0;
-  motionAccumulator = 0; motionPeak = false; stoppedFrames = 0;
-  updateMotionRing(0, false);
-}
-
-function computeMotion() {
-  const video = document.getElementById('camera-video');
-  if (!video || !video.videoWidth) return;
-  const mc  = document.getElementById('motion-canvas');
-  const ctx = mc.getContext('2d');
-  ctx.drawImage(video, 0, 0, 80, 60);
-  const curr = ctx.getImageData(0, 0, 80, 60).data;
-  if (!prevMotionData) { prevMotionData = new Uint8ClampedArray(curr); return; }
-
-  let diff = 0;
-  for (let i = 0; i < curr.length; i += 4) {
-    const lC = curr[i]*0.299 + curr[i+1]*0.587 + curr[i+2]*0.114;
-    const lP = prevMotionData[i]*0.299 + prevMotionData[i+1]*0.587 + prevMotionData[i+2]*0.114;
-    if (Math.abs(lC - lP) > 8) diff++;
-  }
-  prevMotionData    = new Uint8ClampedArray(curr);
-  recentMotionScore = Math.min(100, Math.round(diff / 48));
-
-  if (!isHoldMode) {
-    // ── Rep mode: peak detection triggers a rep ─────────────────────────────
-    if (recentMotionScore >= MOTION_HIGH) {
-      motionPeak    = true;
-      stoppedFrames = 0;
-    } else if (recentMotionScore <= MOTION_LOW && motionPeak) {
-      stoppedFrames++;
-      if (stoppedFrames >= 2) {
-        motionPeak    = false;
-        stoppedFrames = 0;
-        const onCombat = document.getElementById('screen-combat').classList.contains('active');
-        if (!repCooldown && onCombat && currentCombat && currentCombat.active) captureRep();
-      }
-    } else {
-      stoppedFrames = 0;
-    }
-    if (motionPeak) {
-      motionAccumulator = Math.min(100, motionAccumulator + recentMotionScore * 3);
-    } else {
-      motionAccumulator = Math.max(0, motionAccumulator - 20);
-    }
-    updateMotionRing(motionAccumulator, motionPeak);
-  } else {
-    // ── Hold mode: ring = wobble indicator (high motion = bad) ───────────────
-    const wobble = Math.min(100, recentMotionScore * 8);
-    updateMotionRing(wobble, wobble < 30);  // green when still, orange when wobbling
-    const lbl = document.getElementById('motion-label');
-    if (lbl) lbl.textContent = 'HOLD';
-  }
-}
-
-function updateMotionRing(level, peaked) {
-  const arc   = document.getElementById('motion-arc');
-  const label = document.getElementById('motion-label');
-  if (!arc) return;
-  const circ = 138.2;
-  arc.setAttribute('stroke-dasharray', `${((level / 100) * circ).toFixed(1)} ${circ}`);
-  if (peaked && level > 30) {
-    arc.setAttribute('stroke', 'rgba(168,230,207,0.95)');
-    label.textContent = '✓';
-    label.style.color = 'rgba(168,230,207,0.95)';
-  } else if (level > 10) {
-    arc.setAttribute('stroke', 'rgba(255,176,124,0.9)');
-    label.textContent = '…';
-    label.style.color = 'rgba(255,176,124,0.9)';
-  } else {
-    arc.setAttribute('stroke', 'rgba(255,255,255,0.2)');
-    label.textContent = 'GO';
-    label.style.color = 'rgba(255,255,255,0.35)';
-  }
-}
-
-// ── Capture rep ────────────────────────────────────────────────────────────
-async function captureRep() {
-  if (!currentCombat || !currentCombat.active) return;
-  if (repCooldown) return;
-
-  repCooldown       = true;
-  motionAccumulator = 0;
-  setTimeout(() => { repCooldown = false; }, 1500);
-
-  // ── Instant feedback BEFORE the network call ───────────────────────────────
-  playTick();
-  if (navigator.vibrate) navigator.vibrate(50);
-
-  // Optimistic rep counter — reconciled when server responds
-  const optimisticRep = (currentCombat.reps_completed || 0) + 1;
-  document.getElementById('rep-count').textContent   = optimisticRep;
-  document.getElementById('rep-overlay').textContent = `${optimisticRep} / ${currentCombat.reps_required}`;
-
-  // Optimistic HP drop (base_damage × 0.75 = "good" quality)
-  const optimisticDmg = Math.max(1, Math.round(currentCombat.base_damage * 0.75));
-  const optimisticHp  = Math.max(0, currentCombat.enemy_current_hp - optimisticDmg);
-  const optHpPct      = Math.round((optimisticHp / currentCombat.enemy_max_hp) * 100);
-  document.getElementById('enemy-hp-bar').style.width  = optHpPct + '%';
-  document.getElementById('enemy-hp-text').textContent = `HP ${optimisticHp}/${currentCombat.enemy_max_hp}`;
-
-  document.body.classList.remove('flash-hit','flash-dmg');
-  void document.body.offsetWidth;
-  document.body.classList.add('flash-hit');
-
-  const qEl = document.getElementById('quality-overlay');
-  qEl.textContent = 'HIT!';
-  qEl.className   = 'quality-pill q-good';
-
-  // Capture frame
-  const video  = document.getElementById('camera-video');
-  const canvas = document.getElementById('camera-canvas');
-  canvas.width  = video.videoWidth  || 640;
-  canvas.height = video.videoHeight || 480;
-  canvas.getContext('2d').drawImage(video, 0, 0);
-  const b64 = canvas.toDataURL('image/jpeg', 0.75).split(',')[1];
-
-  const btn = document.getElementById('attack-btn');
-  btn.disabled = true;
-
-  try {
-    const r = await fetch(`${API}/api/analyze-rep`, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ session_id: sessionId, image_b64: b64, exercise: currentCombat.exercise })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    const data = await r.json();
-    if (!currentCombat) return;  // user exited while request was in-flight
-
-    // ── Reconcile with server's definitive values ──────────────────────────
-    playRepQuality(data.quality);
-    if (navigator.vibrate) {
-      if      (data.quality === 'perfect') navigator.vibrate([50, 30, 50]);
-      else if (data.quality === 'good')    navigator.vibrate(50);
-      else if (data.quality === 'sloppy')  navigator.vibrate([100, 30, 100]);
-      else if (data.quality === 'miss')    navigator.vibrate(200);
-    }
-
-    currentCombat.enemy_current_hp = data.enemy_hp;
-    currentCombat.reps_completed   = data.reps_completed;
-
-    const hpPct = Math.round((data.enemy_hp / data.enemy_max_hp) * 100);
-    document.getElementById('enemy-hp-bar').style.width  = hpPct + '%';
-    document.getElementById('enemy-hp-text').textContent = `HP ${data.enemy_hp}/${data.enemy_max_hp}`;
-
-    if (data.reps_required && data.reps_required !== currentCombat.reps_required) {
-      currentCombat.reps_required = data.reps_required;
-      document.getElementById('reps-needed').textContent = data.reps_required;
-    }
-    document.getElementById('rep-count').textContent   = data.reps_completed;
-    document.getElementById('rep-overlay').textContent = `${data.reps_completed} / ${currentCombat.reps_required}`;
-
-    const qLabels = {perfect:'PERFECT', good:'GOOD', sloppy:'SLOPPY', miss:'HIT'};
-    qEl.textContent = qLabels[data.quality] || 'HIT';
-    qEl.className   = `quality-pill q-${data.quality}`;
-
-    if (data.counter_damage > 0) {
-      document.getElementById('form-feedback').textContent = `Counter-attack! −${data.counter_damage} HP`;
-    } else {
-      document.getElementById('form-feedback').textContent = data.feedback || '';
-    }
-
-    if (data.player_hp !== undefined) {
-      const pPct = Math.round((data.player_hp / data.player_max_hp) * 100);
-      document.getElementById('player-hp-bar').style.width = pPct + '%';
-      document.getElementById('player-hp-val').textContent = `${data.player_hp}/${data.player_max_hp}`;
-    }
-
-    document.body.classList.remove('flash-hit','flash-dmg');
-    void document.body.offsetWidth;
-    document.body.classList.add(data.quality === 'sloppy' ? 'flash-dmg' : 'flash-hit');
-
-    if (data.narration_pending) {
-      streamNarration();
-    } else if (data.narration) {
-      document.getElementById('combat-narrative').textContent = data.narration;
-    }
-
-    // Enemy kill takes priority; then player death; then rep exhaustion
-    if (data.enemy_defeated) {
-      if (data.enemies_remaining > 0) {
-        await advanceToNextEnemy();
-      } else {
-        stopCamera();
-        await endCombat(true);
-      }
-    } else if (data.player_defeated) {
-      stopCamera();
-      await endCombat(false);
-    } else if (data.reps_completed >= currentCombat.reps_required && data.enemy_hp > 0) {
-      stopCamera();
-      await endCombat(false);
-    }
-
-  } catch(e) {
-    console.error(e);
-    alert('Rep analysis error: ' + e.message);
-  } finally {
-    btn.disabled  = false;
-    btn.innerHTML = `${icon('sword',22)} REP TRIGGER`;
-    // Restart hold timer after each auto-captured rep
-    if (isHoldMode && currentCombat && currentCombat.active && !holdTimerInterval) {
-      startHoldTimer();
-    }
-  }
-}
-
-// ── End combat ─────────────────────────────────────────────────────────────
-async function endCombat(victory) {
-  stopHoldTimer();
-  stopMetronome();
-  stopDrone();
-  try {
-    const r = await fetch(`${API}/api/end-combat`, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ session_id: sessionId })
-    });
-    const data = await r.json();
-
-    const stateR = await fetch(`${API}/api/state/${sessionId}`);
-    gameState = await stateR.json();
-    updateHeader();
-
-    if (victory) {
-      document.getElementById('victory-sub').textContent = `${currentCombat.enemy.name} has been slain!`;
-      document.getElementById('battle-report').innerHTML = `
-        <p style="font-size:.85rem;margin-bottom:7px;display:flex;align-items:center;gap:6px">${icon('gem',16,'#A8E6CF')} Perfect: <strong style="color:#2ecc71">${data.perfect_reps}</strong></p>
-        <p style="font-size:.85rem;margin-bottom:7px;display:flex;align-items:center;gap:6px">${icon('check',16,'#A8E6CF')} Good: <strong style="color:#7ddb7d">${data.good_reps}</strong></p>
-        <p style="font-size:.85rem;margin-bottom:7px;display:flex;align-items:center;gap:6px">${icon('alert',16,'#FFB07C')} Sloppy: <strong style="color:#FFB07C">${data.sloppy_reps}</strong></p>
-        <p style="font-size:.85rem;margin-bottom:7px;display:flex;align-items:center;gap:6px">${icon('x-circle',16,'#FF9AA2')} Missed: <strong style="color:#FF9AA2">${data.miss_reps}</strong></p>
-      `;
-
-      // XP bar
-      const c = data.character;
-      const cls = c.class ? c.class.charAt(0).toUpperCase() + c.class.slice(1) : 'Hero';
-      document.getElementById('victory-char-label').textContent = `${cls} · Lv ${c.level}`;
-      document.getElementById('xp-pill').textContent = `+${data.xp_gained} XP`;
-      document.getElementById('xp-label-cur').textContent = `${c.xp} / ${c.xp_next}`;
-      document.getElementById('xp-label-next').textContent = `${Math.max(0, c.xp_next - c.xp)} to Lv ${c.level + 1}`;
-      document.getElementById('xp-bar').style.width = `${Math.min(100, Math.round(c.xp / c.xp_next * 100))}%`;
-
-      // Loot
-      const lootCard = document.getElementById('loot-card');
-      const lootList = document.getElementById('loot-list');
-      if (data.items_found && data.items_found.length > 0) {
-        lootList.innerHTML = data.items_found.map(item => {
-          const isRare = (item.pct || 0) >= 0.10;
-          return `<div style="background:#FFF5E1;border:2px solid #1a1a1a;border-radius:14px;padding:10px 14px;text-align:center;min-width:80px">
-            <p style="font-size:.85rem;font-weight:700;margin-bottom:4px">${item.name}</p>
-            <span class="${isRare?'rarity-rare':'rarity-cmn'}">${isRare?'RARE':'CMN'}</span>
-          </div>`;
-        }).join('');
-        lootCard.style.display = 'block';
-      } else {
-        lootCard.style.display = 'none';
-      }
-
-      const lvlCard = document.getElementById('levelup-card');
-      if (data.leveled_up) {
-        lvlCard.style.display = 'block';
-        document.getElementById('levelup-text').textContent = `You are now Level ${c.level} · Max HP increased to ${c.max_hp}`;
-      } else {
-        lvlCard.style.display = 'none';
-      }
-
-      renderRepChart(data.quality_log);
-      updateInventory(data.character.inventory || []);
-
-      if (gameState.world) {
-        const cleared = gameState.character.defeated_rooms || [];
-        renderRooms(gameState.world.rooms, gameState.world.boss_room, cleared, gameState.world.entrance_room);
-        renderWorldMap(gameState.world, cleared, currentRoomId);
-      }
-
-      if (data.is_boss_victory) {
-        playVictory();
-        showFinale(data);
-      } else {
-        playVictory();
-        showScreen('victory');
-      }
-    } else {
-      document.getElementById('defeat-reps-pill').textContent = `Reps this run · ${currentCombat?.reps_completed || 0}`;
-      document.getElementById('defeat-xp-pill').textContent   = `+${data.xp_gained || 0} XP earned`;
-      document.getElementById('defeat-enemy-name').textContent = currentCombat?.enemy?.name || 'the dungeon';
-      document.getElementById('defeat-room-name').textContent  = currentCombat?.room_id || '';
-      const flavors = [
-        'Rest a moment. Then show them what you\'re made of.',
-        'The dungeon doesn\'t care about excuses. Neither does your body.',
-        'Every hero falls. Not every hero gets back up.',
-        'Close. So close. Again.',
-      ];
-      document.getElementById('defeat-flavor').textContent = flavors[Math.floor(Math.random()*flavors.length)];
-      playDefeat();
-      showScreen('defeat');
-    }
-  } catch(e) {
-    console.error('endCombat error', e);
-    showScreen(victory ? 'world' : 'defeat');
-  }
-}
-
-function fleeCombat() {
-  stopHoldTimer();
-  stopMetronome();
-  stopCamera();
-  stopDrone();
-  currentCombat = null;
-  showScreen('world');
-}
-
-async function advanceToNextEnemy() {
-  const overlay = document.getElementById('next-enemy-overlay');
-  document.getElementById('next-enemy-title').textContent = 'Enemy Defeated!';
-  document.getElementById('next-enemy-sub').textContent   = 'Loading next foe…';
-  overlay.style.display = 'flex';
-  playEnemyAppear();
-
-  try {
-    const r = await fetch(`${API}/api/next-enemy`, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ session_id: sessionId })
-    });
-    if (!r.ok) throw new Error(await r.text());
-    const data = await r.json();
-
-    document.getElementById('next-enemy-title').textContent = `+${data.xp_gained} XP!` + (data.leveled_up ? '  ⬆️ LEVEL UP!' : '');
-    document.getElementById('next-enemy-sub').textContent   = `${data.enemy.name} steps forward…`;
-    await new Promise(res => setTimeout(res, 1800));
-    overlay.style.display = 'none';
-
-    currentCombat = Object.assign(currentCombat, {
-      enemy:            data.enemy,
-      enemy_max_hp:     data.enemy_max_hp,
-      enemy_current_hp: data.enemy_current_hp,
-      reps_completed:   0,
-      reps_required:    data.reps_required,
-      exercise:         data.exercise,
-      active:           true,
-    });
-
-    document.getElementById('enemy-name').textContent       = data.enemy.name;
-    document.getElementById('enemy-lore').textContent       = data.enemy.lore || '';
-    document.getElementById('enemy-hp-text').textContent    = `HP ${data.enemy_max_hp}/${data.enemy_max_hp}`;
-    document.getElementById('enemy-hp-bar').style.width     = '100%';
-    document.getElementById('enemy-emoji').innerHTML        = getEnemyIcon(data.enemy.name);
-    document.getElementById('exercise-display').textContent = data.exercise;
-    document.getElementById('rep-count').textContent        = '0';
-    document.getElementById('reps-needed').textContent      = data.reps_required;
-    document.getElementById('rep-overlay').textContent      = `0 / ${data.reps_required}`;
-    document.getElementById('quality-overlay').textContent  = '';
-    document.getElementById('form-feedback').textContent    = '';
-    document.getElementById('combat-narrative').textContent = data.opening_narration || '';
-
-    const counter = document.getElementById('enemy-counter');
-    const idx = data.current_enemy_idx + 1;
-    if (data.enemies_total > 1) { counter.textContent = `ENEMY ${idx} / ${data.enemies_total}`; counter.style.display = 'inline-block'; }
-
-    if (gameState) { gameState.character = data.character; updateHeader(); }
-    if (!cameraStream) await startCamera();
-    setupCombatExerciseUI(data.exercise);
-
-  } catch(e) {
-    overlay.style.display = 'none';
-    alert('Error loading next enemy: ' + e.message);
-    showScreen('world');
-  }
-}
-
-function retryFight() {
-  if (!gameState || !gameState.world) { showScreen('world'); return; }
-  const room = gameState.world.rooms.find(r => r.id === currentRoomId);
-  if (room) enterRoom(room);
-  else showScreen('world');
-}
-
-// ── Header ─────────────────────────────────────────────────────────────────
-function updateHeader() {
-  if (!gameState || !gameState.character) return;
-  const c = gameState.character;
-  document.getElementById('hdr-name').textContent = `${c.name}  Lv.${c.level}`;
-  document.getElementById('hdr-hp').innerHTML     = `${icon('heart',14,'#FF9AA2',2)} ${c.hp}/${c.max_hp}`;
-}
-
-// ── Inventory ──────────────────────────────────────────────────────────────
-function updateInventory(inventory) {
-  const card    = document.getElementById('inventory-card');
-  const list    = document.getElementById('inventory-list');
-  const bonusEl = document.getElementById('inventory-bonus');
-  if (!inventory || inventory.length === 0) { card.style.display = 'none'; return; }
-
-  list.innerHTML = '';
-  let total = 0;
-  inventory.forEach(item => {
-    total += item.pct || 0;
-    const p = document.createElement('p');
-    p.style.cssText = 'font-size:.85rem;margin-bottom:7px';
-    p.innerHTML = `${icon('zap',14,'#FFB07C')} <span style="color:#1a1a1a;font-weight:600">${item.name}</span>`
-                + `<span style="color:#aaa;font-size:.75rem"> — ${item.bonus}</span>`;
-    list.appendChild(p);
+// ── Scroll reveal ──────────────────────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
   });
-
-  total = Math.min(total, 0.50);
-  bonusEl.textContent = total > 0 ? `⚡ Damage bonus: +${Math.round(total * 100)}%` : '';
-  card.style.display = 'block';
-}
-
-// ── Rep history chart ──────────────────────────────────────────────────────
-function renderRepChart(log) {
-  const card  = document.getElementById('rep-chart-card');
-  const chart = document.getElementById('rep-chart');
-  if (!log || !log.length) { card.style.display = 'none'; return; }
-  const colors  = { perfect:'#A8E6CF', good:'#FFD8B1', sloppy:'#FFB07C', miss:'#FF9AA2' };
-  const heights = { perfect:48, good:36, sloppy:20, miss:10 };
-  chart.innerHTML = log.map(q =>
-    `<div style="flex:1;min-width:5px;max-width:18px;height:${heights[q]||10}px;`
-    + `background:${colors[q]||'#e8ddd0'};border:1.5px solid #1a1a1a;border-radius:3px 3px 0 0"></div>`
-  ).join('');
-  card.style.display = 'block';
-}
-
-// ── World map ──────────────────────────────────────────────────────────────
-function computeLayout(rooms, entranceId, W, H) {
-  const levels = {}, visited = new Set();
-  const queue  = [[entranceId, 0]];
-  visited.add(entranceId);
-  while (queue.length) {
-    const [id, lv] = queue.shift();
-    if (!levels[lv]) levels[lv] = [];
-    levels[lv].push(id);
-    const room = rooms.find(r => r.id === id);
-    for (const c of (room?.connections || [])) {
-      if (!visited.has(c)) { visited.add(c); queue.push([c, lv + 1]); }
-    }
-  }
-  rooms.forEach(r => {
-    if (!visited.has(r.id)) {
-      const max = Math.max(0, ...Object.keys(levels).map(Number));
-      if (!levels[max + 1]) levels[max + 1] = [];
-      levels[max + 1].push(r.id);
-    }
-  });
-  const positions = {};
-  const numLvl = Object.keys(levels).length;
-  const pad = 44;
-  for (const [lv, ids] of Object.entries(levels)) {
-    const x = pad + (parseInt(lv) / Math.max(numLvl - 1, 1)) * (W - 2 * pad);
-    ids.forEach((id, i) => {
-      positions[id] = { x: Math.round(x), y: Math.round((H / (ids.length + 1)) * (i + 1)) };
-    });
-  }
-  return positions;
-}
-
-function renderWorldMap(world, clearedRooms, currentRoomId) {
-  const svg = document.getElementById('dungeon-map');
-  if (!svg || !world) return;
-  const W = svg.getBoundingClientRect().width || 340;
-  const H = 190;
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.innerHTML = '';
-  const R = 22;
-  const positions = computeLayout(world.rooms, world.entrance_room, W, H);
-
-  const drawn = new Set();
-  for (const room of world.rooms) {
-    for (const connId of (room.connections || [])) {
-      const key = [room.id, connId].sort().join('|');
-      if (drawn.has(key)) continue;
-      drawn.add(key);
-      const a = positions[room.id], b = positions[connId];
-      if (!a || !b) continue;
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', a.x); line.setAttribute('y1', a.y);
-      line.setAttribute('x2', b.x); line.setAttribute('y2', b.y);
-      line.setAttribute('stroke', '#c8bfaf'); line.setAttribute('stroke-width', '2');
-      svg.appendChild(line);
-    }
-  }
-
-  for (const room of world.rooms) {
-    const pos = positions[room.id];
-    if (!pos) continue;
-    const isCleared  = clearedRooms.includes(room.id);
-    const isBoss     = room.id === world.boss_room || room.is_boss;
-    const isCurrent  = room.id === currentRoomId;
-    const hasEnemies = room.enemies && room.enemies.length > 0;
-
-    const seeds       = clearedRooms.length > 0 ? clearedRooms : [world.entrance_room];
-    const isAccessible = room.id === world.entrance_room || isCleared
-      || (room.connections || []).some(c => seeds.includes(c));
-    const canEnter = hasEnemies && !isCleared && isAccessible;
-
-    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.setAttribute('transform', `translate(${pos.x},${pos.y})`);
-    g.style.cursor = canEnter ? 'pointer' : 'default';
-
-    if (isCurrent) {
-      const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      glow.setAttribute('r', R + 7); glow.setAttribute('fill', 'none');
-      glow.setAttribute('stroke', '#FFB07C'); glow.setAttribute('stroke-width', '2.5');
-      glow.setAttribute('class', 'room-glow');
-      g.appendChild(glow);
-    }
-
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('r', R);
-    circle.setAttribute('fill',   isCleared ? '#A8E6CF' : isBoss ? '#FFD8B1' : '#fff');
-    circle.setAttribute('stroke', isCleared ? '#1a1a1a' : isBoss ? '#FF9AA2' : isCurrent ? '#FFB07C' : '#1a1a1a');
-    circle.setAttribute('stroke-width', (isBoss || isCurrent) ? '2.5' : '1.5');
-    g.appendChild(circle);
-
-    if (!isAccessible) {
-      // Lock icon (Lucide-style SVG paths), scaled to fit the circle
-      g.setAttribute('opacity', '0.35');
-      const ns = 'http://www.w3.org/2000/svg';
-      const lockG = document.createElementNS(ns, 'g');
-      lockG.setAttribute('transform', 'scale(0.65) translate(-12,-13)');
-      lockG.setAttribute('stroke', '#666'); lockG.setAttribute('stroke-width', '2');
-      lockG.setAttribute('stroke-linecap', 'round'); lockG.setAttribute('fill', 'none');
-      const body = document.createElementNS(ns, 'rect');
-      body.setAttribute('x', '3'); body.setAttribute('y', '11');
-      body.setAttribute('width', '18'); body.setAttribute('height', '11'); body.setAttribute('rx', '2');
-      const shackle = document.createElementNS(ns, 'path');
-      shackle.setAttribute('d', 'M7 11V7a5 5 0 0 1 10 0v4');
-      lockG.appendChild(body); lockG.appendChild(shackle);
-      g.appendChild(lockG);
-    } else {
-      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      icon.setAttribute('text-anchor', 'middle'); icon.setAttribute('dominant-baseline', 'central');
-      icon.setAttribute('font-size', '13');
-      icon.textContent = isCleared ? '✓' : isBoss ? '★' : hasEnemies ? '!' : '?';
-      g.appendChild(icon);
-    }
-
-    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    label.setAttribute('text-anchor', 'middle'); label.setAttribute('y', R + 12);
-    label.setAttribute('font-size', '8');
-    label.setAttribute('fill', isCleared ? '#1a1a1a' : isBoss ? '#FF9AA2' : '#888');
-    label.textContent = room.name.length > 13 ? room.name.slice(0, 12) + '…' : room.name;
-    g.appendChild(label);
-
-    if (canEnter) g.onclick = () => enterRoom(room);
-    svg.appendChild(g);
-  }
-}
-
-// ── Boss finale ────────────────────────────────────────────────────────────
-function showFinale(endData) {
-  const world = gameState?.world;
-  document.getElementById('finale-dungeon-name').textContent = world?.dungeon_name || 'The Dungeon';
-  const c = endData.character;
-  document.getElementById('finale-stats').innerHTML = `
-    <p style="font-size:.85rem;margin-bottom:7px;display:flex;align-items:center;gap:6px">${icon('sword',16,'#FFB07C')} Level: <strong style="color:#FFB07C">${c.level}</strong></p>
-    <p style="font-size:.85rem;margin-bottom:7px;display:flex;align-items:center;gap:6px">${icon('star',16,'#FFB07C')} Total XP: <strong style="color:#FFB07C">${c.xp}</strong></p>
-    <p style="font-size:.85rem;margin-bottom:7px;display:flex;align-items:center;gap:6px">${icon('heart',16,'#FF9AA2',2)} Final HP: <strong style="color:#A8E6CF">${c.hp}/${c.max_hp}</strong></p>
-    <p style="font-size:.85rem;display:flex;align-items:center;gap:6px">${icon('trophy',16,'#FFB07C')} Rooms cleared: <strong style="color:#FFB07C">${c.defeated_rooms?.length || 0}</strong></p>
-  `;
-  showScreen('finale');
-
-  const el = document.getElementById('finale-narrative');
-  el.textContent = '';
-  el.insertAdjacentHTML('beforeend', '<span class="stream-cursor">▋</span>');
-  let text = '';
-  const es = new EventSource(`${API}/api/boss-finale/${sessionId}`);
-  es.onmessage = e => {
-    if (e.data === '[DONE]') { es.close(); el.textContent = text; return; }
-    try {
-      const chunk = JSON.parse(e.data);
-      if (chunk.token) {
-        text += chunk.token;
-        el.textContent = text;
-        el.insertAdjacentHTML('beforeend', '<span class="stream-cursor">▋</span>');
-      }
-    } catch {}
-  };
-  es.onerror = () => { es.close(); if (text) el.textContent = text; };
-}
-
-function startNewQuest() {
-  sessionId = null; gameState = null; currentCombat = null; currentRoomId = null;
-  localStorage.removeItem('bq_session');
-  showScreen('home');
-}
-
-function exitToMenu() {
-  if (!confirm('Exit to main menu? Current dungeon progress will be lost.')) return;
-  stopCamera();
-  stopDrone();
-  startNewQuest();
-}
-
-// ── Streaming narration ────────────────────────────────────────────────────
-function streamNarration() {
-  const el = document.getElementById('combat-narrative');
-  el.textContent = '';
-  el.insertAdjacentHTML('beforeend', '<span class="stream-cursor">▋</span>');
-  let text = '';
-  const es = new EventSource(`${API}/api/narrative-stream/${sessionId}`);
-  es.onmessage = e => {
-    if (e.data === '[DONE]') { es.close(); el.textContent = text; return; }
-    try {
-      const chunk = JSON.parse(e.data);
-      if (chunk.token) {
-        text += chunk.token;
-        el.textContent = text;
-        el.insertAdjacentHTML('beforeend', '<span class="stream-cursor">▋</span>');
-      }
-    } catch {}
-  };
-  es.onerror = () => { es.close(); if (text) el.textContent = text; };
-}
-
-// ── Session restore on page load ───────────────────────────────────────────
-async function tryRestoreSession() {
-  const saved = localStorage.getItem('bq_session');
-  if (!saved) return;
-  try {
-    const r = await fetch(`${API}/api/state/${saved}`);
-    if (!r.ok) { localStorage.removeItem('bq_session'); return; }
-    const state = await r.json();
-    sessionId = saved;
-    gameState = state;
-
-    if (!state.world) return;
-
-    document.getElementById('dungeon-title').textContent = state.world.dungeon_name;
-    document.getElementById('dungeon-lore').textContent  = state.world.dungeon_lore;
-    const hist = state.narrative_history;
-    if (hist && hist.length) {
-      document.getElementById('world-narrative').textContent = hist[hist.length - 1].text;
-    }
-    renderRooms(state.world.rooms, state.world.boss_room, state.character.defeated_rooms || [], state.world.entrance_room);
-    renderWorldMap(state.world, state.character.defeated_rooms || [], state.current_room_id);
-    updateInventory(state.character.inventory || []);
-    updateHeader();
-    showScreen('world');
-  } catch (_) {
-    localStorage.removeItem('bq_session');
-  }
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-  await tryRestoreSession();
-  checkFirstRun();
-});
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
 </body>
 </html>
