@@ -27,13 +27,15 @@ NARRATIVE_MODEL = os.getenv("NARRATIVE_MODEL", "gemma4:e4b")  # set NARRATIVE_MO
 OLLAMA_TIMEOUT  = float(os.getenv("OLLAMA_TIMEOUT", "120"))
 MOCK_AI         = os.getenv("MOCK_AI") == "1"
 
+IS_VERCEL = bool(os.getenv("VERCEL"))
+
 # ── Google AI Studio (optional — players can supply their own key) ─────────────
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
 GOOGLE_MODEL   = os.getenv("GOOGLE_MODEL",   "gemini-2.0-flash")
 GOOGLE_BASE    = "https://generativelanguage.googleapis.com/v1beta"
 
 # ── Session persistence ───────────────────────────────────────────────────────
-SESSIONS_FILE = Path(__file__).parent / "sessions.json"
+SESSIONS_FILE = Path("/tmp/sessions.json") if IS_VERCEL else Path(__file__).parent / "sessions.json"
 
 def _load_sessions() -> dict:
     if SESSIONS_FILE.exists():
@@ -944,10 +946,11 @@ async def verify_google_key(req: GoogleKeyRequest):
         raise HTTPException(400, f"Key check failed: {e}")
 
 
-# ── Serve frontend ─────────────────────────────────────────────────────────────
-frontend_dir = Path(__file__).parent.parent / "frontend"
-if frontend_dir.exists():
-    app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
+# ── Serve frontend (local dev only — Vercel serves static files itself) ────────
+if not IS_VERCEL:
+    frontend_dir = Path(__file__).parent.parent / "frontend"
+    if frontend_dir.exists():
+        app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
 
 
 if __name__ == "__main__":

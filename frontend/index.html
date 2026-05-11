@@ -794,7 +794,7 @@ p{line-height:1.6}
 
 <script>
 // ── State ──────────────────────────────────────────────────────────────────
-let API               = localStorage.getItem('bq_api') || 'http://localhost:8000';
+let API               = localStorage.getItem('bq_api') || (['localhost','127.0.0.1'].includes(location.hostname) ? 'http://localhost:8000' : '');
 let sessionId         = null;
 let selectedClass     = 'warrior';
 let selectedDifficulty = 'normal';

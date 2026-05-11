@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "outputDirectory": "frontend",
+  "routes": [
+    { "src": "^/api/(.*)", "dest": "/api/index.py" },
+    { "src": "^/game$",    "dest": "/index.html"   },
+    { "src": "^/$",        "dest": "/landing.html"  },
+    { "handle": "filesystem" }
+  ],
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 60
+    }
+  }
+}
