@@ -12,3 +12,4 @@ build/
 venv/
 CLAUDE.md
 .vercel
+public/

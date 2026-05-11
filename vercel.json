@@ -1,6 +1,7 @@
 {
   "version": 2,
-  "outputDirectory": "frontend",
+  "buildCommand": "mkdir -p public && cp -r frontend/. public/",
+  "outputDirectory": "public",
   "rewrites": [
     { "source": "/game",       "destination": "/game.html"   },
     { "source": "/api/:path*", "destination": "/api/index.py" }
